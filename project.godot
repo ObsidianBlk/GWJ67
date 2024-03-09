@@ -1,0 +1,34 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="GWJ67"
+run/main_scene="res://scenes/world/world.tscn"
+config/features=PackedStringArray("4.2", "Mobile")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Settings="*res://scripts/autos/settings.gd"
+GAS="*res://scripts/autos/GAS.gd"
+
+[file_customization]
+
+folder_colors={
+"res://assets/": "green",
+"res://scenes/": "blue",
+"res://scripts/": "pink",
+"res://ui/": "yellow"
+}
+
+[rendering]
+
+renderer/rendering_method="mobile"

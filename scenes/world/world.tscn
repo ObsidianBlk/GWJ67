@@ -1,0 +1,24 @@
+[gd_scene load_steps=6 format=3 uid="uid://x1v0jsxgb8b0"]
+
+[ext_resource type="Script" path="res://scenes/world/world.gd" id="1_ckcy3"]
+[ext_resource type="Script" path="res://scripts/ui/ui_layer.gd" id="1_ydui3"]
+[ext_resource type="PackedScene" uid="uid://cna05auxqxyo0" path="res://ui/main_menu/main_menu.tscn" id="3_snvxx"]
+[ext_resource type="PackedScene" uid="uid://c3p0rqkha82y4" path="res://ui/dialog_confirm/dialog_confirm.tscn" id="4_c6cj4"]
+[ext_resource type="PackedScene" uid="uid://bofbqfeoar6el" path="res://ui/options_menu/options_menu.tscn" id="4_jcpr6"]
+
+[node name="World" type="Node2D" node_paths=PackedStringArray("ui")]
+script = ExtResource("1_ckcy3")
+ui = NodePath("UILayer")
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 100
+script = ExtResource("1_ydui3")
+initial_ui = &"MainMenu"
+
+[node name="MainMenu" parent="UILayer" instance=ExtResource("3_snvxx")]
+options_menu_name = &"OptionsMenu"
+hide_at_start = false
+
+[node name="OptionsMenu" parent="UILayer" instance=ExtResource("4_jcpr6")]
+
+[node name="DialogConfirm" parent="UILayer" instance=ExtResource("4_c6cj4")]

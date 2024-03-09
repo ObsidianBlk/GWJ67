@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3 uid="uid://c3p0rqkha82y4"]
+
+[ext_resource type="Script" path="res://ui/dialog_confirm/dialog_confirm.gd" id="1_lmp8l"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_se4dk"]
+content_margin_left = 12.0
+content_margin_right = 12.0
+bg_color = Color(0.223103, 0.223103, 0.223103, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_blend = true
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hbbl1"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.223103, 0.223103, 0.223103, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_blend = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_svb7y"]
+content_margin_left = 12.0
+content_margin_right = 12.0
+bg_color = Color(0.223103, 0.223103, 0.223103, 1)
+border_width_left = 2
+border_width_right = 2
+border_width_bottom = 2
+border_blend = true
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="DialogConfirm" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lmp8l")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Titlebar" type="PanelContainer" parent="Layout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_se4dk")
+
+[node name="LBL_Titlebar" type="Label" parent="Layout/Titlebar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Spiffy Titlebar Label"
+horizontal_alignment = 1
+
+[node name="Content" type="PanelContainer" parent="Layout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hbbl1")
+
+[node name="LBL_Content" type="Label" parent="Layout/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Message goes here, I suppose"
+horizontal_alignment = 1
+
+[node name="Options" type="PanelContainer" parent="Layout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_svb7y")
+
+[node name="HBC" type="HBoxContainer" parent="Layout/Options"]
+layout_mode = 2
+
+[node name="BTN_Yes" type="Button" parent="Layout/Options/HBC"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Yes"
+
+[node name="Spacer" type="Control" parent="Layout/Options/HBC"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BTN_No" type="Button" parent="Layout/Options/HBC"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "No
+"
+
+[connection signal="pressed" from="Layout/Options/HBC/BTN_Yes" to="." method="_on_btn_yes_pressed"]
+[connection signal="pressed" from="Layout/Options/HBC/BTN_No" to="." method="_on_btn_no_pressed"]

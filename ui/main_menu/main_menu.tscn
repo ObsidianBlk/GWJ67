@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://cna05auxqxyo0"]
+
+[ext_resource type="Script" path="res://ui/main_menu/main_menu.gd" id="1_0n8e6"]
+[ext_resource type="Theme" uid="uid://l28o45infhdy" path="res://ui/game.theme" id="1_w73ow"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_w73ow")
+script = ExtResource("1_0n8e6")
+
+[node name="OptionsMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme_override_constants/margin_left = 128
+
+[node name="Layout" type="VBoxContainer" parent="OptionsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Titlebar" type="PanelContainer" parent="OptionsMargin/Layout"]
+layout_mode = 2
+theme_type_variation = &"MenuPanelTitlebar"
+
+[node name="Label" type="Label" parent="OptionsMargin/Layout/Titlebar"]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="Options" type="PanelContainer" parent="OptionsMargin/Layout"]
+layout_mode = 2
+theme_type_variation = &"MenuPanelBody"
+
+[node name="MenuButtons" type="VBoxContainer" parent="OptionsMargin/Layout/Options"]
+layout_mode = 2
+
+[node name="BTN_Start" type="Button" parent="OptionsMargin/Layout/Options/MenuButtons"]
+layout_mode = 2
+text = "Start Game"
+
+[node name="BTN_Options" type="Button" parent="OptionsMargin/Layout/Options/MenuButtons"]
+layout_mode = 2
+text = "Options"
+
+[node name="BTN_Quit" type="Button" parent="OptionsMargin/Layout/Options/MenuButtons"]
+layout_mode = 2
+text = "Quit"
+
+[connection signal="pressed" from="OptionsMargin/Layout/Options/MenuButtons/BTN_Start" to="." method="_on_btn_start_pressed"]
+[connection signal="pressed" from="OptionsMargin/Layout/Options/MenuButtons/BTN_Options" to="." method="_on_btn_options_pressed"]
+[connection signal="pressed" from="OptionsMargin/Layout/Options/MenuButtons/BTN_Quit" to="." method="_on_btn_quit_pressed"]

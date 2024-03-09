@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3 uid="uid://bofbqfeoar6el"]
+
+[ext_resource type="Theme" uid="uid://l28o45infhdy" path="res://ui/game.theme" id="1_03re0"]
+[ext_resource type="Script" path="res://ui/options_menu/options_menu.gd" id="2_2an0x"]
+
+[node name="OptionsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_03re0")
+script = ExtResource("2_2an0x")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+grow_vertical = 2
+theme_override_constants/margin_left = 128
+
+[node name="VBC" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Titlebar" type="PanelContainer" parent="MarginContainer/VBC"]
+layout_mode = 2
+theme_type_variation = &"MenuPanelTitlebar"
+
+[node name="Label" type="Label" parent="MarginContainer/VBC/Titlebar"]
+layout_mode = 2
+text = "Options Menu"
+horizontal_alignment = 1
+
+[node name="Body" type="PanelContainer" parent="MarginContainer/VBC"]
+layout_mode = 2
+theme_type_variation = &"MenuPanelBody"
+
+[node name="Layout" type="VBoxContainer" parent="MarginContainer/VBC/Body"]
+layout_mode = 2
+
+[node name="VolumeOptions" type="GridContainer" parent="MarginContainer/VBC/Body/Layout"]
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+columns = 2
+
+[node name="LBL_VolumeMaster" type="Label" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+layout_mode = 2
+text = "Master:"
+
+[node name="Slider_VolumeMaster" type="HSlider" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="LBL_VolumeSFX" type="Label" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+layout_mode = 2
+text = "SFX:"
+
+[node name="Slider_VolumeSFX" type="HSlider" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="LBL_VolumeMusic" type="Label" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+layout_mode = 2
+text = "Music:"
+
+[node name="Slider_VolumeMusic" type="HSlider" parent="MarginContainer/VBC/Body/Layout/VolumeOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBC/Body/Layout"]
+layout_mode = 2
+
+[node name="BTN_Back" type="Button" parent="MarginContainer/VBC/Body/Layout"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="value_changed" from="MarginContainer/VBC/Body/Layout/VolumeOptions/Slider_VolumeMaster" to="." method="_on_slider_volume_master_value_changed"]
+[connection signal="value_changed" from="MarginContainer/VBC/Body/Layout/VolumeOptions/Slider_VolumeSFX" to="." method="_on_slider_volume_sfx_value_changed"]
+[connection signal="value_changed" from="MarginContainer/VBC/Body/Layout/VolumeOptions/Slider_VolumeMusic" to="." method="_on_slider_volume_music_value_changed"]
+[connection signal="pressed" from="MarginContainer/VBC/Body/Layout/BTN_Back" to="." method="_on_btn_back_pressed"]
