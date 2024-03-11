@@ -4,7 +4,8 @@ class_name Actor
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
-signal direction_moved(direction : int)
+signal move_started(direction : int)
+signal move_ended()
 
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
@@ -72,13 +73,13 @@ func _EmitMovementDirection(to : Vector2) -> void:
 	var dir : Vector2i = map_to - map_from
 	
 	if dir.x < 0:
-		direction_moved.emit(DIRECTION.West)
+		move_started.emit(DIRECTION.West)
 	elif dir.x > 0:
-		direction_moved.emit(DIRECTION.East)
+		move_started.emit(DIRECTION.East)
 	elif dir.y < 0:
-		direction_moved.emit(DIRECTION.North)
+		move_started.emit(DIRECTION.North)
 	elif dir.y > 0:
-		direction_moved.emit(DIRECTION.South)
+		move_started.emit(DIRECTION.South)
 
 
 func _TweenTo(to : Vector2) -> void:
@@ -91,6 +92,8 @@ func _TweenTo(to : Vector2) -> void:
 	
 	await tween.finished
 	_tweening = false
+	_AlignToMap()
+	move_ended.emit()
 	if not _queue.is_empty():
 		if typeof(_queue["move"]) == TYPE_VECTOR2:
 			move_to.call_deferred(_queue["move"])

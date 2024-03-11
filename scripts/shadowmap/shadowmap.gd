@@ -76,6 +76,23 @@ func _IsFloor(q : ShadowQuadrent, coord : Variant) -> bool:
 			return true
 	return false
 
+func _Scan(viz : Array[Vector2i], q : ShadowQuadrent, row : ShadowRow, depth : int) -> void:
+	if depth <= 0: return
+	
+	var prev_coord : Variant = null
+	for coord : Vector2i in row.get_coords():
+		if _IsWall(q, coord) or row.is_symmetric(coord):
+			viz.append(q.transform(coord))
+		if _IsWall(q, prev_coord) and _IsFloor(q, coord):
+			row.set_start_slope(row.CalcSlope(coord))
+		if _IsFloor(q, prev_coord) and _IsWall(q, coord):
+			var nrow : ShadowRow = row.next()
+			nrow.set_end_slope(row.CalcSlope(coord))
+			_Scan(viz, q, nrow, depth - 1)
+		prev_coord = coord
+	if _IsFloor(q, prev_coord):
+		_Scan(viz, q, row.next(), depth - 1)
+
 # ------------------------------------------------------------------------------
 # Public Static Methods
 # ------------------------------------------------------------------------------
@@ -85,8 +102,12 @@ static func Get() -> WeakRef:
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
-func compute_fov() -> void:
-	pass
+func compute_fov(q : ShadowQuadrent, depth : int) -> Array[Vector2i]:
+	if map == null or q == null or depth <= 0: return []
+	var viz : Array[Vector2i] = []
+	var row : ShadowRow = ShadowRow.new(1, -1, 1)
+	_Scan(viz, q, row, depth)
+	return viz
 
 # ------------------------------------------------------------------------------
 # Handler Methods

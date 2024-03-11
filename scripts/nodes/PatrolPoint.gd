@@ -1,4 +1,6 @@
-extends Actor
+@tool
+extends Node2D
+class_name PatrolPoint
 
 # ------------------------------------------------------------------------------
 # Signals
@@ -8,64 +10,66 @@ extends Actor
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
-const ANIM_IDLE_1 : StringName = &"idle"
-const ANIM_IDLE_2 : StringName = &"idle_bounce"
-const ANIM_IDLE_3 : StringName = &"idle_look"
-
-const ANIM_NORTH : StringName = &"north"
-const ANIM_SOUTH : StringName = &"south"
-const ANIM_EAST : StringName = &"east"
-const ANIM_WEST : StringName = &"west"
+const DRAW_RADIUS : float = 3.0
 
 # ------------------------------------------------------------------------------
 # Export Variables
 # ------------------------------------------------------------------------------
-
+@export_category("Patrol Point")
+@export var color : Color = Color.BLUE:					set = set_color
+@export var next_point : PatrolPoint = null:			set = set_next_point
 
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
-
+var _last_dst_position : Vector2 = Vector2.ZERO
 
 # ------------------------------------------------------------------------------
 # Onready Variables
 # ------------------------------------------------------------------------------
-@onready var _asprite_2d: AnimatedSprite2D = $ASprite2D
 
 
 # ------------------------------------------------------------------------------
 # Setters / Getters
 # ------------------------------------------------------------------------------
+func set_color(c : Color) -> void:
+	if c != color:
+		color = c
+		queue_redraw()
 
+func set_next_point(p : PatrolPoint) -> void:
+	if p == self: return
+	if p == next_point: return
+	next_point = p
+	if next_point != null:
+		_last_dst_position = next_point.global_position
+	queue_redraw()
 
 # ------------------------------------------------------------------------------
 # Override Methods
 # ------------------------------------------------------------------------------
 func _ready() -> void:
-	super._ready()
-	move_started.connect(_on_move_started)
-	move_ended.connect(_on_move_ended)
+	if not Engine.is_editor_hint():
+		set_process(false)
 
-func _process(delta: float) -> void:
-	if not _tweening:
-		_PlayIdle()
+func _draw() -> void:
+	if not Engine.is_editor_hint(): return
+	draw_circle(Vector2.ZERO, DRAW_RADIUS, color)
+	if next_point != null:
+		var dir : Vector2 = global_position.direction_to(next_point.global_position)
+		var dist : float = global_position.distance_to(next_point.global_position)
+		draw_line(Vector2.ZERO, dir * dist, Color.WHITE, 1, true)
+
+func _process(_delta: float) -> void:
+	if next_point == null: return
+	if not next_point.global_position.is_equal_approx(_last_dst_position):
+		_last_dst_position = next_point.global_position
+		queue_redraw()
 
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
-func _PlayIdle() -> void:
-	if _asprite_2d.animation.begins_with("idle"):
-		if not _asprite_2d.is_playing():
-			var anim : StringName = ANIM_IDLE_1
-			var possibility = randf_range(0.0, 1000.0)
-			if possibility < 100.0:
-				anim = ANIM_IDLE_3
-				if possibility < 50.0:
-					anim = ANIM_IDLE_2
-			_asprite_2d.play(anim)
-				
-	else:
-		_asprite_2d.play(ANIM_IDLE_1)
+
 
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -75,25 +79,6 @@ func _PlayIdle() -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
-func _on_move_started(dir : int) -> void:
-	match dir:
-		Actor.DIRECTION.North:
-			_asprite_2d.play(ANIM_NORTH)
-		Actor.DIRECTION.South:
-			_asprite_2d.play(ANIM_SOUTH)
-		Actor.DIRECTION.East:
-			_asprite_2d.play(ANIM_EAST)
-		Actor.DIRECTION.West:
-			_asprite_2d.play(ANIM_WEST)
 
-func _on_move_ended() -> void:
-	var smap : Shadowmap = Shadowmap.Get().get_ref()
-	if smap == null:
-		print("No shadow map!")
-	var q : ShadowQuadrent = ShadowQuadrent.new(
-		map.local_to_map(global_position),
-		ShadowQuadrent.Cardinal.NORTH
-	)
-	var viz : Array[Vector2i] = smap.compute_fov(q, 5)
-	map.highlight_region(name, viz, 2)
+
 

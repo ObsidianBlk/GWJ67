@@ -8,14 +8,7 @@ extends Actor
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
-const ANIM_IDLE_1 : StringName = &"idle"
-const ANIM_IDLE_2 : StringName = &"idle_bounce"
-const ANIM_IDLE_3 : StringName = &"idle_look"
 
-const ANIM_NORTH : StringName = &"north"
-const ANIM_SOUTH : StringName = &"south"
-const ANIM_EAST : StringName = &"east"
-const ANIM_WEST : StringName = &"west"
 
 # ------------------------------------------------------------------------------
 # Export Variables
@@ -25,12 +18,11 @@ const ANIM_WEST : StringName = &"west"
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
-
+var _fov : Array[Vector2i] = []
 
 # ------------------------------------------------------------------------------
 # Onready Variables
 # ------------------------------------------------------------------------------
-@onready var _asprite_2d: AnimatedSprite2D = $ASprite2D
 
 
 # ------------------------------------------------------------------------------
@@ -41,31 +33,26 @@ const ANIM_WEST : StringName = &"west"
 # ------------------------------------------------------------------------------
 # Override Methods
 # ------------------------------------------------------------------------------
-func _ready() -> void:
-	super._ready()
-	move_started.connect(_on_move_started)
-	move_ended.connect(_on_move_ended)
-
-func _process(delta: float) -> void:
-	if not _tweening:
-		_PlayIdle()
+func _physics_process(_delta: float) -> void:
+	if map == null: return
+	if _fov.size() <= 0:
+		_UpdateFOV()
+	var actors : Array[Actor] = map.get_actors_in_region(_fov)
+	for actor : Actor in actors:
+		if actor.is_in_group(&"Player"):
+			print("I see you, PLAYER!")
 
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
-func _PlayIdle() -> void:
-	if _asprite_2d.animation.begins_with("idle"):
-		if not _asprite_2d.is_playing():
-			var anim : StringName = ANIM_IDLE_1
-			var possibility = randf_range(0.0, 1000.0)
-			if possibility < 100.0:
-				anim = ANIM_IDLE_3
-				if possibility < 50.0:
-					anim = ANIM_IDLE_2
-			_asprite_2d.play(anim)
-				
-	else:
-		_asprite_2d.play(ANIM_IDLE_1)
+func _UpdateFOV() -> void:
+	var smap : Shadowmap = Shadowmap.Get().get_ref()
+	var q : ShadowQuadrent = ShadowQuadrent.new(
+		map.local_to_map(global_position),
+		ShadowQuadrent.Cardinal.EAST
+	)
+	_fov = smap.compute_fov(q, 3)
+	map.highlight_region(name, _fov, 3)
 
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -75,25 +62,6 @@ func _PlayIdle() -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
-func _on_move_started(dir : int) -> void:
-	match dir:
-		Actor.DIRECTION.North:
-			_asprite_2d.play(ANIM_NORTH)
-		Actor.DIRECTION.South:
-			_asprite_2d.play(ANIM_SOUTH)
-		Actor.DIRECTION.East:
-			_asprite_2d.play(ANIM_EAST)
-		Actor.DIRECTION.West:
-			_asprite_2d.play(ANIM_WEST)
 
-func _on_move_ended() -> void:
-	var smap : Shadowmap = Shadowmap.Get().get_ref()
-	if smap == null:
-		print("No shadow map!")
-	var q : ShadowQuadrent = ShadowQuadrent.new(
-		map.local_to_map(global_position),
-		ShadowQuadrent.Cardinal.NORTH
-	)
-	var viz : Array[Vector2i] = smap.compute_fov(q, 5)
-	map.highlight_region(name, viz, 2)
+
 

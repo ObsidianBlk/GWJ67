@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://kom5168dm0gg"]
+
+[ext_resource type="Texture2D" uid="uid://bbap20kr44a15" path="res://assets/graphics/character/Bean.png" id="1_73m5q"]
+[ext_resource type="Script" path="res://objects/human/human.gd" id="1_cs14g"]
+
+[node name="Human" type="Node2D"]
+script = ExtResource("1_cs14g")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_73m5q")
+offset = Vector2(1, -6)
