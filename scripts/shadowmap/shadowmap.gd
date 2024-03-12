@@ -102,9 +102,11 @@ static func Get() -> WeakRef:
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
-func compute_fov(q : ShadowQuadrent, depth : int) -> Array[Vector2i]:
+func compute_fov(q : ShadowQuadrent, depth : int, base_viz : Array[Vector2i] = []) -> Array[Vector2i]:
 	if map == null or q == null or depth <= 0: return []
-	var viz : Array[Vector2i] = []
+	var viz : Array[Vector2i] = base_viz.slice(0)
+	if viz.find(q.get_origin()) < 0:
+		viz.append(q.get_origin())
 	var row : ShadowRow = ShadowRow.new(1, -1, 1)
 	_Scan(viz, q, row, depth)
 	return viz

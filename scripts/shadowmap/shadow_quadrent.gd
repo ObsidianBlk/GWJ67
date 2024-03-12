@@ -22,6 +22,15 @@ func _init(origin : Vector2, cardinal : Cardinal) -> void:
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
+func set_cardinal(cardinal : Cardinal) -> void:
+	_cardinal = cardinal
+
+func get_cardinal() -> Cardinal:
+	return _cardinal
+
+func get_origin() -> Vector2i:
+	return _origin
+
 func transform(coord : Vector2i) -> Vector2i:
 	match _cardinal:
 		Cardinal.NORTH:

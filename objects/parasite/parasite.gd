@@ -90,10 +90,23 @@ func _on_move_ended() -> void:
 	var smap : Shadowmap = Shadowmap.Get().get_ref()
 	if smap == null:
 		print("No shadow map!")
+		return
 	var q : ShadowQuadrent = ShadowQuadrent.new(
 		map.local_to_map(global_position),
 		ShadowQuadrent.Cardinal.NORTH
 	)
-	var viz : Array[Vector2i] = smap.compute_fov(q, 5)
-	map.highlight_region(name, viz, 2)
+	var viz : Array[Vector2i] = smap.compute_fov(q, 3)
+	q.set_cardinal(ShadowQuadrent.Cardinal.EAST)
+	viz = smap.compute_fov(q, 3, viz)
+	q.set_cardinal(ShadowQuadrent.Cardinal.SOUTH)
+	viz = smap.compute_fov(q, 3, viz)
+	q.set_cardinal(ShadowQuadrent.Cardinal.WEST)
+	viz = smap.compute_fov(q, 3, viz)
+	
+	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
+	if fow == null:
+		print("No FOW map!")
+		return
+	fow.set_region(self.name, viz, 1)
+	#map.highlight_region(name, viz, 2)
 
