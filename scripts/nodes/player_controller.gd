@@ -1,5 +1,7 @@
-extends Node
+extends ScheduledController
 class_name PlayerController
+
+# TODO: Reenable the lines en/disabling process_unhandled_input
 
 # ------------------------------------------------------------------------------
 # Signals
@@ -16,7 +18,6 @@ const PLAYER_GROUP : StringName = &"Player"
 # ------------------------------------------------------------------------------
 @export_category("Player Controller")
 
-
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
@@ -26,17 +27,20 @@ const PLAYER_GROUP : StringName = &"Player"
 # Onready Variables
 # ------------------------------------------------------------------------------
 
-
 # ------------------------------------------------------------------------------
 # Setters / Getters
 # ------------------------------------------------------------------------------
 
-
 # ------------------------------------------------------------------------------
 # Override Methods
 # ------------------------------------------------------------------------------
+func _ready() -> void:
+	super._ready()
+	if not is_in_group(Scheduler.CONTROL_GROUP_PLAYER):
+		add_to_group(Scheduler.CONTROL_GROUP_PLAYER)
+	#set_process_unhandled_input(false)
+
 func _unhandled_input(event: InputEvent) -> void:
-	var actor : Actor = _GetPlayerActor()
 	if actor == null: return
 	
 	if event.is_action_pressed("up"):
@@ -51,21 +55,45 @@ func _unhandled_input(event: InputEvent) -> void:
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
-func _GetPlayerActor() -> Actor:
-	var actors : Array = get_tree().get_nodes_in_group(PLAYER_GROUP)
-	for actor in actors:
-		if actor is Actor:
-			return actor
-	return null
+func _DisconnectActor() -> void:
+	if actor == null: return
+	
+	if actor.is_in_group(PLAYER_GROUP):
+		actor.remove_from_group(PLAYER_GROUP)
+		
+	if actor.move_ended.is_connected(_on_actor_move_ended):
+		actor.move_ended.disconnect(_on_actor_move_ended)
+
+func _ConnectActor() -> void:
+	if actor == null: return
+	
+	if not actor.move_ended.is_connected(_on_actor_move_ended):
+		actor.move_ended.connect(_on_actor_move_ended)
+	
+	if not actor.is_in_group(PLAYER_GROUP):
+		actor.add_to_group(PLAYER_GROUP)
+
+func _EndAction() -> void:
+	action_complete.emit()
+#func _GetPlayerActor() -> Actor:
+	#var actors : Array = get_tree().get_nodes_in_group(PLAYER_GROUP)
+	#for actor in actors:
+		#if actor is Actor:
+			#return actor
+	#return null
 
 # ------------------------------------------------------------------------------
-# Public Methods
+# "Virtual" Public Methods
 # ------------------------------------------------------------------------------
-
+func action() -> void:
+	#set_process_unhandled_input(true)
+	pass
 
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
-
+func _on_actor_move_ended() -> void:
+	#set_process_unhandled_input(false)
+	_EndAction.call_deferred()
 
 

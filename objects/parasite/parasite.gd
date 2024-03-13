@@ -45,6 +45,7 @@ func _ready() -> void:
 	super._ready()
 	move_started.connect(_on_move_started)
 	move_ended.connect(_on_move_ended)
+	_on_move_ended.call_deferred()
 
 func _process(delta: float) -> void:
 	if not _tweening:

@@ -60,6 +60,7 @@ func _BuildAStarGrid() -> void:
 		return
 	
 	_astar.clear()
+	_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	var maprect : Rect2i = get_used_rect()
 	_astar.region = maprect
 	_astar.update()
@@ -109,11 +110,11 @@ func get_layer_index_from_name(layer_name : String) -> int:
 			return i
 	return -1
 
-func get_point_path(from : Vector2, to : Vector2) -> Array[Vector2i]:
+func get_point_path(from : Vector2, to : Vector2) -> PackedVector2Array:
 	var map_from : Vector2i = local_to_map(from)
 	var map_to : Vector2i = local_to_map(to)
 	if map_from != map_to:
-		var results = _astar.get_point_path(map_from, map_to)
+		var results : PackedVector2Array = _astar.get_point_path(map_from, map_to)
 		return results.slice(1)
 	return []
 

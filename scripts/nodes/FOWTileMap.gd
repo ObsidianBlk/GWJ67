@@ -112,6 +112,17 @@ func set_region(region_name : String, region : Array[Vector2i], alternate : int)
 		_region[region_name] = {"cells":region, "alt":alternate}
 	_UpdateRegions()
 
+func cell_in_region(cell : Vector2i) -> bool:
+	if parent_map == null: return false
+	for region_name in _region.keys():
+		if _region[region_name].cells.find(cell) >= 0:
+			return true
+	return false
+
+func position_in_view(pos : Vector2) -> bool:
+	if parent_map == null: return false
+	return cell_in_region(local_to_map(pos))
+
 # ------------------------------------------------------------------------------
 # Static Public Methods
 # ------------------------------------------------------------------------------
