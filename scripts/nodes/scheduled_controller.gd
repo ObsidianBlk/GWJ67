@@ -42,6 +42,8 @@ func set_actor(a : Actor) -> void:
 # ------------------------------------------------------------------------------
 func _ready() -> void:
 	_ConnectActor()
+	Scheduler.Register_Controller(self)
+	#_RegisterToScheduler.call_deferred()
 
 # ------------------------------------------------------------------------------
 # "Virtual" Private Methods
@@ -52,11 +54,13 @@ func _DisconnectActor() -> void:
 func _ConnectActor() -> void:
 	pass
 
+
 # ------------------------------------------------------------------------------
 # "virtual" Public Methods
 # ------------------------------------------------------------------------------
 func action() -> void:
 	pass
+
 
 # ------------------------------------------------------------------------------
 # Handler Methods

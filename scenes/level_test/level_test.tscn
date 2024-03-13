@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bhsewn688jqaa"]
+[gd_scene load_steps=15 format=3 uid="uid://bhsewn688jqaa"]
 
 [ext_resource type="Script" path="res://scripts/shadowmap/shadowmap.gd" id="1_0qg00"]
 [ext_resource type="Script" path="res://scripts/nodes/player_controller.gd" id="1_4j0k5"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/nodes/PatrolPoint.gd" id="8_gbwkj"]
 [ext_resource type="Shader" path="res://shaders/fog_of_war.gdshader" id="9_0iuy4"]
 [ext_resource type="Script" path="res://scripts/nodes/FOWTileMap.gd" id="9_1d4y7"]
+[ext_resource type="Script" path="res://scripts/nodes/scheduler.gd" id="11_l35es"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_dmjn6"]
 noise_type = 5
@@ -62,6 +63,11 @@ map = NodePath("..")
 position = Vector2(-33, 29)
 patrol_group = &"Patrol1"
 map = NodePath("..")
+hidden_in_fow = null
+sight_foreward = null
+sight_backward = null
+sight_left = null
+sight_right = null
 
 [node name="FollowCamera2D" type="Camera2D" parent="." groups=["MasterCamera"]]
 zoom = Vector2(3, 3)
@@ -123,3 +129,6 @@ layer_1/y_sort_enabled = true
 layer_1/tile_data = PackedInt32Array()
 script = ExtResource("9_1d4y7")
 parent_map = NodePath("../../../../TileMap")
+
+[node name="Scheduler" type="Node" parent="."]
+script = ExtResource("11_l35es")

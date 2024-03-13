@@ -1,8 +1,6 @@
 extends ScheduledController
 class_name PlayerController
 
-# TODO: Reenable the lines en/disabling process_unhandled_input
-
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
@@ -38,7 +36,7 @@ func _ready() -> void:
 	super._ready()
 	if not is_in_group(Scheduler.CONTROL_GROUP_PLAYER):
 		add_to_group(Scheduler.CONTROL_GROUP_PLAYER)
-	#set_process_unhandled_input(false)
+	set_process_unhandled_input(false)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if actor == null: return
@@ -86,14 +84,13 @@ func _EndAction() -> void:
 # "Virtual" Public Methods
 # ------------------------------------------------------------------------------
 func action() -> void:
-	#set_process_unhandled_input(true)
-	pass
+	set_process_unhandled_input(true)
 
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
 func _on_actor_move_ended() -> void:
-	#set_process_unhandled_input(false)
+	set_process_unhandled_input(false)
 	_EndAction.call_deferred()
 
 
