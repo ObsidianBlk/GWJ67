@@ -45,6 +45,8 @@ const ANIM_WEST : StringName = &"west"
 func _ready() -> void:
 	super._ready()
 	move_started.connect(_on_move_started)
+
+func _enter_tree() -> void:
 	_MoveEnded.call_deferred()
 
 func _process(delta: float) -> void:
@@ -74,14 +76,15 @@ func _PlayIdle() -> void:
 func _MoveEnded() -> void:
 	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
 	if fow == null: return
-	fow.set_region(self.name, compute_sight(), 1)
+	fow.set_region(Settings.FOW_REGION_NAME, compute_sight(), 1)
 
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
-func attack() -> void:
+func attack(_amount : int = 1) -> int:
 	print("Ouch you bitch!!!")
 	queue_free()
+	return 1
 
 # ------------------------------------------------------------------------------
 # Handler Methods

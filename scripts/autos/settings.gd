@@ -19,6 +19,8 @@ const CONFIG_FILE_PATH : String = "user://game.ini"
 
 const ACTOR_GROUP_PLAYER : StringName = &"Player"
 
+const FOW_REGION_NAME : String = "FOW"
+
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------

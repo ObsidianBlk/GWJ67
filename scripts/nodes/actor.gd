@@ -24,7 +24,6 @@ const WALK_DURATION : float = 0.5
 @export_category("Actor")
 @export var map : AStarTileMap = null
 @export var hidden_in_fow : bool = true
-
 @export_subgroup("Sight Range")
 @export_range(0, 10) var sight_foreward : int = 3
 @export_range(0, 10) var sight_backward : int = 3
@@ -324,9 +323,26 @@ func get_visible_actors() -> Array[Actor]:
 	if map == null or _sight.size() <= 0: return []
 	return map.get_actors_in_region(_sight)
 
+func get_adjacent_actor(dir : DIRECTION) -> Actor:
+	if map == null: return null
+	var mpos : Vector2i = map.local_to_map(global_position)
+	
+	match dir:
+		DIRECTION.North:
+			return map.get_actor_in_cell(mpos + Vector2i.UP)
+		DIRECTION.East:
+			return map.get_actor_in_cell(mpos + Vector2i.RIGHT)
+		DIRECTION.South:
+			return map.get_actor_in_cell(mpos + Vector2i.DOWN)
+		DIRECTION.West:
+			return map.get_actor_in_cell(mpos + Vector2i.LEFT)
+	
+	return null
+
 func get_map_position() -> Vector2i:
 	if map == null: return Vector2i.ZERO
 	return map.local_to_map(global_position)
+
 
 # ------------------------------------------------------------------------------
 # Handler Methods

@@ -16,6 +16,12 @@ signal astar_changed()
 @export_category("A-Star TileMap")
 @export var floor_layer_name : String = ""
 
+
+# ------------------------------------------------------------------------------
+# Static Variables
+# ------------------------------------------------------------------------------
+static var _Instance : AStarTileMap = null
+
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
@@ -46,6 +52,14 @@ func _ready() -> void:
 	child_exiting_tree.connect(_on_child_exiting_tree)
 	_BuildAStarGrid()
 	_RegisterActors()
+
+func _enter_tree() -> void:
+	if _Instance == null:
+		_Instance = self
+
+func _exit_tree() -> void:
+	if _Instance == self:
+		_Instance = null
 
 # ------------------------------------------------------------------------------
 # Private Methods
@@ -105,6 +119,30 @@ func _OccupyCell(actor : Actor, cell : Vector2i) -> void:
 	_astar.set_point_solid(cell, true)
 
 # ------------------------------------------------------------------------------
+# Static Public Methods
+# ------------------------------------------------------------------------------ 
+static func Get() -> WeakRef:
+	return weakref(_Instance)
+
+static func Add_Actor(a : Actor, position : Vector2 = Vector2.ZERO, direction : int = 4) -> bool:
+	if _Instance == null or a.is_inside_tree(): return false
+	_Instance.add_child(a)
+	if direction >= 0 and direction < 4:
+		var cell : Vector2i = _Instance.local_to_map(position)
+		match direction:
+			0: # North
+				cell += Vector2i.UP
+			1: # East
+				cell += Vector2i.RIGHT
+			2: # South
+				cell += Vector2i.DOWN
+			3: # West
+				cell += Vector2i.LEFT
+		position = _Instance.map_to_local(cell)
+	a.global_position = position
+	return true
+
+# ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------ 
 func get_layer_index_from_name(layer_name : String) -> int:
@@ -140,6 +178,11 @@ func get_actors_in_region(region : Array[Vector2i]) -> Array[Actor]:
 		if cell in _occupied_cells:
 			actors.append(_occupied_cells[cell])
 	return actors
+
+func get_actor_in_cell(cell : Vector2i) -> Actor:
+	if cell in _occupied_cells:
+		return _occupied_cells[cell]
+	return null
 
 func highlight_region(region_name : StringName, region : Array[Vector2i], alternate : int) -> void:
 	_RemoveRegion(region_name)

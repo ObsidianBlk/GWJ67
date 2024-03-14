@@ -8,7 +8,13 @@ class_name PlayerController
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
+const PARASITE_SCENE : PackedScene = preload("res://objects/parasite/parasite.tscn")
 
+const ATTACK_ENTER_AMOUNT : int = 5
+const ATTACK_EXIT_AMOUNT : int = 5
+const ATTACK_EAT_AMOUNT : int = 10
+
+enum Mode {MOVE=0, EXIT=1}
 
 # ------------------------------------------------------------------------------
 # Export Variables
@@ -18,7 +24,7 @@ class_name PlayerController
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
-
+var _mode : Mode = Mode.MOVE
 
 # ------------------------------------------------------------------------------
 # Onready Variables
@@ -41,15 +47,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if actor == null: return
 	
 	if event.is_action_pressed("up"):
-		# TODO: Check if "Human" is in the direction I'm attempting to move...
-		#  If so, take control of that Actor and remove Parasite Actor from the board.
-		actor.move(Actor.DIRECTION.North)
+		_HandleAction(Actor.DIRECTION.North)
 	elif event.is_action_pressed("down"):
-		actor.move(Actor.DIRECTION.South)
+		_HandleAction(Actor.DIRECTION.South)
 	elif event.is_action_pressed("left"):
-		actor.move(Actor.DIRECTION.West)
+		_HandleAction(Actor.DIRECTION.West)
 	elif event.is_action_pressed("right"):
-		actor.move(Actor.DIRECTION.East)
+		_HandleAction(Actor.DIRECTION.East)
+	
+	if actor is Human and event.is_action_pressed("toggle_mode"):
+		match _mode:
+			Mode.MOVE:
+				_mode = Mode.EXIT
+			Mode.EXIT:
+				_mode = Mode.MOVE
 
 # ------------------------------------------------------------------------------
 # Private Methods
@@ -67,7 +78,7 @@ func _DisconnectActor() -> void:
 	if is_processing_unhandled_input():
 		set_process_unhandled_input(false)
 		_EndAction.call_deferred()
-		Scheduler.Unregister_Controller(self)
+		#Scheduler.Unregister_Controller(self)
 
 func _ConnectActor() -> void:
 	if actor == null: return
@@ -78,6 +89,31 @@ func _ConnectActor() -> void:
 	
 	if not actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
 		actor.add_to_group(Settings.ACTOR_GROUP_PLAYER)
+
+func _HandleAction(direction : Actor.DIRECTION) -> void:
+	if actor is Parasite:
+		var target : Actor = actor.get_adjacent_actor(direction)
+		if target is Human:
+			if target.is_alive():
+				var life : int = target.attack(ATTACK_ENTER_AMOUNT)
+				print("ENTERING! Got ", life, " life!")
+				actor.queue_free()
+				actor = target
+				return
+			else:
+				var life : int = target.attack(ATTACK_EAT_AMOUNT)
+				print("EATING! Got ", life, " life!")
+				target.queue_free()
+	elif actor is Human and _mode == Mode.EXIT:
+		var parasite : Actor = PARASITE_SCENE.instantiate()
+		parasite.map = AStarTileMap.Get().get_ref()
+		if AStarTileMap.Add_Actor(parasite, actor.global_position, direction):
+			var life : int = actor.attack(ATTACK_EXIT_AMOUNT)
+			print("EXITING! Got ", life, " life!")
+			actor = parasite
+			return
+
+	actor.move(direction)
 
 func _EndAction() -> void:
 	action_complete.emit()

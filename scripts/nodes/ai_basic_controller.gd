@@ -104,28 +104,12 @@ func _FindEnemy() -> Actor:
 			return a
 	return null
 
+func _IsActorAlive() -> bool:
+	if not actor is Human: return false
+	return actor.is_alive()
+
 func _EndAction() -> void:
 	action_complete.emit()
-
-# ------------------------------------------------------------------------------
-# State Methods
-# ------------------------------------------------------------------------------
-#func _STATE_Patrol() -> void:
-	#if actor == null:
-		#_EndAction.call_deferred()
-	#
-	#if not actor.has_path() and _target_point != null:
-		#actor.set_path_to(_target_point.global_position)
-	#
-	#if actor.has_path():
-		#var dir : Actor.DIRECTION = actor.direction_to_path()
-		#actor.move(dir)
-	#else:
-		#_EndAction.call_deferred()
-#
-#
-#func _STATE_Hunt() -> void:
-	#pass
 
 # ------------------------------------------------------------------------------
 # "Virtual" Public Methods
@@ -134,7 +118,7 @@ func action() -> void:
 	if actor == null:
 		_EndAction.call_deferred()
 		return
-	if actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
+	if not _IsActorAlive() or actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
 		_EndAction.call_deferred()
 		return
 	
