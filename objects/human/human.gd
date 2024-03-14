@@ -48,9 +48,14 @@ func _ready() -> void:
 # ------------------------------------------------------------------------------
 func _UpdateVisionArea() -> void:
 	if map == null: return
-	var sight : Array[Vector2i] = compute_sight()
+	var sight : Array[Vector2i] = []
+	if is_alive():
+		sight = compute_sight()
 	map.highlight_region(self.name, sight, HIGHLIGHT_ALTERNATE_TILE_INDEX)
+
 	if is_in_group(Settings.ACTOR_GROUP_PLAYER):
+		if sight.size() <= 0:
+			sight = compute_sight()
 		var fow : FOWTileMap = FOWTileMap.Get().get_ref()
 		if fow == null: return
 		fow.set_region(Settings.FOW_REGION_NAME, sight, 1)
@@ -87,10 +92,14 @@ func move(dir : Actor.DIRECTION) -> void:
 func is_alive() -> bool:
 	return life > death_threshold
 
+func update_vision() -> void:
+	_UpdateVisionArea()
+
 func attack(amount : int = 1) -> int:
 	amount = amount if amount <= life else life
 	life -= amount
 	_UpdateAnimation()
+	_UpdateVisionArea()
 	return amount
 
 # ------------------------------------------------------------------------------

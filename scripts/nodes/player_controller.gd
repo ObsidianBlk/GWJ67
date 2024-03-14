@@ -99,6 +99,7 @@ func _HandleAction(direction : Actor.DIRECTION) -> void:
 				print("ENTERING! Got ", life, " life!")
 				actor.queue_free()
 				actor = target
+				actor.update_vision()
 				return
 			else:
 				var life : int = target.attack(ATTACK_EAT_AMOUNT)

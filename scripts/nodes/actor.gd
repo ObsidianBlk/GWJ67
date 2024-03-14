@@ -23,6 +23,7 @@ const WALK_DURATION : float = 0.5
 # ------------------------------------------------------------------------------
 @export_category("Actor")
 @export var map : AStarTileMap = null
+@export var initial_facing : DIRECTION = DIRECTION.North
 @export var hidden_in_fow : bool = true
 @export_subgroup("Sight Range")
 @export_range(0, 10) var sight_foreward : int = 3
@@ -58,6 +59,7 @@ func set_map(m : AStarTileMap) -> void:
 # Override Methods
 # ------------------------------------------------------------------------------
 func _ready() -> void:
+	_facing = initial_facing
 	_ConnectMap()
 	_AlignToMap()
 
