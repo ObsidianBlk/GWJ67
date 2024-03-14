@@ -17,6 +17,8 @@ signal value_changed(section : String, key : String, value : Variant)
 # ------------------------------------------------------------------------------
 const CONFIG_FILE_PATH : String = "user://game.ini"
 
+const ACTOR_GROUP_PLAYER : StringName = &"Player"
+
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------

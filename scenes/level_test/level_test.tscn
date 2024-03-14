@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bhsewn688jqaa"]
+[gd_scene load_steps=16 format=3 uid="uid://bhsewn688jqaa"]
 
 [ext_resource type="Script" path="res://scripts/shadowmap/shadowmap.gd" id="1_0qg00"]
 [ext_resource type="Script" path="res://scripts/nodes/player_controller.gd" id="1_4j0k5"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/nodes/follow_camera2d.gd" id="5_j8ivw"]
 [ext_resource type="PackedScene" uid="uid://xk07rgerivmc" path="res://objects/parasite/parasite.tscn" id="5_rgb0x"]
 [ext_resource type="PackedScene" uid="uid://kom5168dm0gg" path="res://objects/human/human.tscn" id="6_5fmui"]
+[ext_resource type="Script" path="res://scripts/nodes/ai_basic_controller.gd" id="7_e1x8o"]
 [ext_resource type="Script" path="res://scripts/nodes/PatrolPoint.gd" id="8_gbwkj"]
 [ext_resource type="Shader" path="res://shaders/fog_of_war.gdshader" id="9_0iuy4"]
 [ext_resource type="Script" path="res://scripts/nodes/FOWTileMap.gd" id="9_1d4y7"]
@@ -56,18 +57,21 @@ script = ExtResource("3_0ihmy")
 floor_layer_name = "Floors"
 
 [node name="Parasite" parent="TileMap" node_paths=PackedStringArray("map") groups=["Player"] instance=ExtResource("5_rgb0x")]
-position = Vector2(-17, 7)
+position = Vector2(-129, -17)
 map = NodePath("..")
 
 [node name="Human" parent="TileMap" node_paths=PackedStringArray("map") instance=ExtResource("6_5fmui")]
 position = Vector2(-33, 29)
-patrol_group = &"Patrol1"
 map = NodePath("..")
-hidden_in_fow = null
-sight_foreward = null
-sight_backward = null
-sight_left = null
-sight_right = null
+sight_backward = 0
+sight_left = 1
+sight_right = 1
+
+[node name="AIBasicController" type="Node" parent="TileMap/Human" node_paths=PackedStringArray("actor")]
+script = ExtResource("7_e1x8o")
+patrol_group = &"Patrol1"
+actor = NodePath("..")
+action_points = 1
 
 [node name="FollowCamera2D" type="Camera2D" parent="." groups=["MasterCamera"]]
 zoom = Vector2(3, 3)

@@ -29,6 +29,7 @@ var _order : Array[StringName] = []
 var _idx : int = 0
 var _actions_remaining : int = 0
 
+var _process_execute : bool= false
 var _running : bool = false
 
 # ------------------------------------------------------------------------------
@@ -61,9 +62,31 @@ func _exit_tree() -> void:
 		_Instance = null
 		_Prereg.clear()
 
+func _physics_process(_delta: float) -> void:
+	if _running and _process_execute:
+		_process_execute = false
+		_CleanControls()
+		execute()
+
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
+func _CleanControls() -> void:
+	for ctrl_name in _ctrls.keys():
+		if _ctrls[ctrl_name].get_ref() == null:
+			_ctrls.erase(ctrl_name)
+			_ClearFromOrder(ctrl_name)
+
+func _ClearFromOrder(ctrl_name : StringName) -> void:
+	var idx : int = _order.find(ctrl_name)
+	if idx >= 0:
+		if idx == _idx:
+			_actions_remaining = 0
+			if _running:
+				_process_execute = true
+		elif idx < _idx:
+			_idx -= 1
+		_order.remove_at(idx)
 
 # ------------------------------------------------------------------------------
 # Static Public Methods
@@ -77,6 +100,14 @@ static func Register_Controller(ctrl : ScheduledController) -> void:
 	else:
 		_Instance.register_controller(ctrl)
 
+static func Unregister_Controller(ctrl : ScheduledController) -> void:
+	if _Instance == null:
+		var idx : int = _Prereg.find(ctrl)
+		if idx >= 0:
+			_Prereg.remove_at(idx)
+	else:
+		_Instance.unregister_controller(ctrl)
+
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
@@ -84,7 +115,6 @@ func register_controller(ctrl : ScheduledController) -> void:
 	if ctrl == null: return
 	if not ctrl.name in _ctrls:
 		_ctrls[ctrl.name] = weakref(ctrl)
-		print("Registering Controller: ", ctrl.name)
 		if ctrl.is_in_group(CONTROL_GROUP_PLAYER):
 			_order.push_front(ctrl.name)
 			if _running:
@@ -101,11 +131,7 @@ func unregister_controller(ctrl : ScheduledController) -> void:
 			ctrl.action_complete.disconnect(_on_action_complete)
 			
 		_ctrls.erase(ctrl.name)
-		var idx : int = _order.find(ctrl.name)
-		if idx >= 0:
-			if idx < _idx:
-				_idx -= 1
-			_order.remove_at(idx)
+		_ClearFromOrder(ctrl.name)
 
 func execute() -> void:
 	_running = true
@@ -115,7 +141,7 @@ func execute() -> void:
 		if not _order[_idx] in _ctrls: return
 		ctrl = _ctrls[_order[_idx]].get_ref()
 	
-	if ctrl != null:
+	if ctrl != null and _actions_remaining <= 0:
 		_actions_remaining = ctrl.action_points
 	
 	if _actions_remaining <= 0 or ctrl == null:
@@ -136,7 +162,4 @@ func _on_action_complete() -> void:
 	_actions_remaining -= 1
 	if _actions_remaining <= 0 and _order.size() > 0:
 		_idx = (_idx + 1) % _order.size()
-	if _running:
-		execute()
-
-
+	_process_execute = true

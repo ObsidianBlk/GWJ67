@@ -90,6 +90,7 @@ func _ClearActorCells(actor : Actor) -> void:
 	var cell : Vector2i = _occupying_actors[actor.name]
 	if cell in _occupied_cells:
 		_occupied_cells.erase(cell)
+		_astar.set_point_solid(cell, false)
 	_occupying_actors.erase(actor.name)
 	
 func _OccupyCell(actor : Actor, cell : Vector2i) -> void:
@@ -98,8 +99,10 @@ func _OccupyCell(actor : Actor, cell : Vector2i) -> void:
 		var old_cell : Vector2i = _occupying_actors[actor.name]
 		if old_cell in _occupied_cells:
 			_occupied_cells.erase(old_cell)
+			_astar.set_point_solid(old_cell, false)
 	_occupying_actors[actor.name] = cell
 	_occupied_cells[cell] = actor
+	_astar.set_point_solid(cell, true)
 
 # ------------------------------------------------------------------------------
 # Public Methods

@@ -4,7 +4,6 @@ class_name PlayerController
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
-const PLAYER_GROUP : StringName = &"Player"
 
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
@@ -42,6 +41,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if actor == null: return
 	
 	if event.is_action_pressed("up"):
+		# TODO: Check if "Human" is in the direction I'm attempting to move...
+		#  If so, take control of that Actor and remove Parasite Actor from the board.
 		actor.move(Actor.DIRECTION.North)
 	elif event.is_action_pressed("down"):
 		actor.move(Actor.DIRECTION.South)
@@ -55,36 +56,40 @@ func _unhandled_input(event: InputEvent) -> void:
 # ------------------------------------------------------------------------------
 func _DisconnectActor() -> void:
 	if actor == null: return
+	super._DisconnectActor()
 	
-	if actor.is_in_group(PLAYER_GROUP):
-		actor.remove_from_group(PLAYER_GROUP)
+	if actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
+		actor.remove_from_group(Settings.ACTOR_GROUP_PLAYER)
 		
 	if actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.disconnect(_on_actor_move_ended)
+	
+	if is_processing_unhandled_input():
+		set_process_unhandled_input(false)
+		_EndAction.call_deferred()
+		Scheduler.Unregister_Controller(self)
 
 func _ConnectActor() -> void:
 	if actor == null: return
+	super._ConnectActor()
 	
 	if not actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.connect(_on_actor_move_ended)
 	
-	if not actor.is_in_group(PLAYER_GROUP):
-		actor.add_to_group(PLAYER_GROUP)
+	if not actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
+		actor.add_to_group(Settings.ACTOR_GROUP_PLAYER)
 
 func _EndAction() -> void:
 	action_complete.emit()
-#func _GetPlayerActor() -> Actor:
-	#var actors : Array = get_tree().get_nodes_in_group(PLAYER_GROUP)
-	#for actor in actors:
-		#if actor is Actor:
-			#return actor
-	#return null
 
 # ------------------------------------------------------------------------------
 # "Virtual" Public Methods
 # ------------------------------------------------------------------------------
 func action() -> void:
-	set_process_unhandled_input(true)
+	if actor == null:
+		_EndAction.call_deferred()
+	else:
+		set_process_unhandled_input(true)
 
 # ------------------------------------------------------------------------------
 # Handler Methods

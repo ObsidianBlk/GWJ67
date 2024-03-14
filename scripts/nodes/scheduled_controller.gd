@@ -49,10 +49,14 @@ func _ready() -> void:
 # "Virtual" Private Methods
 # ------------------------------------------------------------------------------
 func _DisconnectActor() -> void:
-	pass
+	if actor == null: return
+	if actor.tree_exiting.is_connected(_on_actor_tree_exiting):
+		actor.tree_exiting.disconnect(_on_actor_tree_exiting)
 
 func _ConnectActor() -> void:
-	pass
+	if actor == null: return
+	if not actor.tree_exiting.is_connected(_on_actor_tree_exiting):
+		actor.tree_exiting.connect(_on_actor_tree_exiting)
 
 
 # ------------------------------------------------------------------------------
@@ -65,6 +69,7 @@ func action() -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
-
+func _on_actor_tree_exiting() -> void:
+	actor = null
 
 

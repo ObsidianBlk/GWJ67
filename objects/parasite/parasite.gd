@@ -1,4 +1,5 @@
 extends Actor
+class_name Parasite
 
 # ------------------------------------------------------------------------------
 # Signals
@@ -44,8 +45,7 @@ const ANIM_WEST : StringName = &"west"
 func _ready() -> void:
 	super._ready()
 	move_started.connect(_on_move_started)
-	move_ended.connect(_on_move_ended)
-	_on_move_ended.call_deferred()
+	_MoveEnded.call_deferred()
 
 func _process(delta: float) -> void:
 	if not _tweening:
@@ -69,9 +69,19 @@ func _PlayIdle() -> void:
 		_asprite_2d.play(ANIM_IDLE_1)
 
 # ------------------------------------------------------------------------------
+# "Virtual" Private Methods
+# ------------------------------------------------------------------------------
+func _MoveEnded() -> void:
+	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
+	if fow == null: return
+	fow.set_region(self.name, compute_sight(), 1)
+
+# ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
-
+func attack() -> void:
+	print("Ouch you bitch!!!")
+	queue_free()
 
 # ------------------------------------------------------------------------------
 # Handler Methods
@@ -86,9 +96,4 @@ func _on_move_started(dir : int) -> void:
 			_asprite_2d.play(ANIM_EAST)
 		Actor.DIRECTION.West:
 			_asprite_2d.play(ANIM_WEST)
-
-func _on_move_ended() -> void:
-	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
-	if fow == null: return
-	fow.set_region(self.name, compute_sight(), 1)
 

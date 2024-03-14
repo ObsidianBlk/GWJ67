@@ -80,12 +80,46 @@ func _GetSightFromCardinal(cardinal : ShadowQuadrent.Cardinal) -> int:
 	var foffset : int = _facing
 	
 	match cardinal:
+		ShadowQuadrent.Cardinal.NORTH:
+			match _facing:
+				DIRECTION.North:
+					return sight_foreward
+				DIRECTION.East:
+					return sight_left
+				DIRECTION.South:
+					return sight_backward
+				DIRECTION.West:
+					return sight_right
 		ShadowQuadrent.Cardinal.EAST:
-			foffset = (foffset + 1) % DIRECTION.Max
+			match _facing:
+				DIRECTION.North:
+					return sight_right
+				DIRECTION.East:
+					return sight_foreward
+				DIRECTION.South:
+					return sight_left
+				DIRECTION.West:
+					return sight_backward
 		ShadowQuadrent.Cardinal.SOUTH:
-			foffset = (foffset + 2) % DIRECTION.Max
+			match _facing:
+				DIRECTION.North:
+					return sight_backward
+				DIRECTION.East:
+					return sight_left
+				DIRECTION.South:
+					return sight_foreward
+				DIRECTION.West:
+					return sight_right
 		ShadowQuadrent.Cardinal.WEST:
-			foffset = (foffset + 3) % DIRECTION.Max
+			match _facing:
+				DIRECTION.North:
+					return sight_right
+				DIRECTION.East:
+					return sight_backward
+				DIRECTION.South:
+					return sight_left
+				DIRECTION.West:
+					return sight_foreward
 	
 	return ranges[foffset]
 
@@ -110,7 +144,7 @@ func _VectorToDirection(v : Vector2i) -> DIRECTION:
 		if v.x > 0:
 			return DIRECTION.East
 		return DIRECTION.West
-	return DIRECTION.North
+	return DIRECTION.Max
 
 
 func _AlignToMap() -> void:
@@ -163,11 +197,30 @@ func _TweenTo(to : Vector2) -> void:
 		if visible and not _IsVisibleAt(map.local_to_map(global_position)):
 			visible = false
 	
+	_MoveEnded()
 	move_ended.emit()
+
+# ------------------------------------------------------------------------------
+# "Virtual" Private Methods
+# ------------------------------------------------------------------------------
+func _MoveEnded() -> void:
+	pass
+
+func _TurnEnded() -> void:
+	pass
 
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
+func is_facing_position(pos : Vector2) -> bool:
+	if map == null: return false
+	var from : Vector2i = map.local_to_map(global_position)
+	var to : Vector2i = map.local_to_map(pos)
+	var dir : DIRECTION = _VectorToDirection(from - to)
+	if dir != DIRECTION.Max:
+		return dir == _facing
+	return false
+
 func get_turns_to_facing(facing : DIRECTION) -> int:
 	var cfv : Vector2i = _DirectionToVector(_facing)
 	var tfv : Vector2i = _DirectionToVector(facing)
@@ -198,6 +251,7 @@ func turn(dir : int) -> void:
 		DIRECTION.West:
 			_facing = DIRECTION.South if dir < 0 else DIRECTION.North
 	
+	_TurnEnded()
 	facing_changed.emit()
 
 
@@ -210,22 +264,9 @@ func move(d : DIRECTION) -> void:
 	var mappos : Vector2i = map.local_to_map(global_position) + _DirectionToVector(d)
 	if not map.is_point_solid(mappos):
 		_TweenTo(map.map_to_local(mappos))
-
-#func move_to(to : Vector2) -> void:
-	#if map == null: return
-	#if _tweening:
-		##_queue["move"] = to
-		#return
-	#
-	#if map.can_move_to(to):
-		#_path = map.get_point_path(global_position, to)
-		#continue_move()
-#
-#func continue_move() -> void:
-	#if map == null or _path.size() <= 0: return
-	#var target : Vector2i = _path[0]
-	#_path = _path.slice(1)
-	#_TweenTo(map.map_to_local(target))
+	else:
+		_MoveEnded()
+		move_ended.emit()
 
 func set_path_to(to : Vector2) -> void:
 	if map == null: return
@@ -247,9 +288,10 @@ func next_path_point() -> void:
 			path_completed.emit()
 
 func direction_to_path() -> DIRECTION:
-	if _path.size() <= 0: return DIRECTION.Max
-	# TODO: Finish this method!!
-	return DIRECTION.North
+	if map == null or _path.size() <= 0: return DIRECTION.Max
+	var from : Vector2i = map.local_to_map(global_position)
+	var to : Vector2i = _path[0]
+	return _VectorToDirection(to - from)
 
 func cancel_path() -> void:
 	_path.clear()
@@ -277,6 +319,14 @@ func compute_sight() -> Array[Vector2i]:
 
 func get_sight_map() -> Array[Vector2i]:
 	return _sight.slice(0)
+
+func get_visible_actors() -> Array[Actor]:
+	if map == null or _sight.size() <= 0: return []
+	return map.get_actors_in_region(_sight)
+
+func get_map_position() -> Vector2i:
+	if map == null: return Vector2i.ZERO
+	return map.local_to_map(global_position)
 
 # ------------------------------------------------------------------------------
 # Handler Methods
