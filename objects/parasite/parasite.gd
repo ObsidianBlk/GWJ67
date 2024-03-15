@@ -82,9 +82,11 @@ func _MoveEnded() -> void:
 # Public Methods
 # ------------------------------------------------------------------------------
 func attack(_amount : int = 1) -> int:
-	print("Ouch you bitch!!!")
-	queue_free()
+	kill()
 	return 1
+
+func kill() -> void:
+	queue_free()
 
 # ------------------------------------------------------------------------------
 # Handler Methods

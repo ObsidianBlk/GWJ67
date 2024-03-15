@@ -102,6 +102,11 @@ func attack(amount : int = 1) -> int:
 	_UpdateVisionArea()
 	return amount
 
+func kill() -> void:
+	life = 0
+	_UpdateAnimation()
+	_UpdateVisionArea()
+
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------

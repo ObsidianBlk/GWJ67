@@ -41,6 +41,8 @@ func _ready() -> void:
 	super._ready()
 	if not is_in_group(Scheduler.CONTROL_GROUP_PLAYER):
 		add_to_group(Scheduler.CONTROL_GROUP_PLAYER)
+	if not PlayerData.blood_level_changed.is_connected(_on_player_blood_changed):
+		PlayerData.blood_level_changed.connect(_on_player_blood_changed)
 	set_process_unhandled_input(false)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -90,27 +92,28 @@ func _ConnectActor() -> void:
 	if not actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
 		actor.add_to_group(Settings.ACTOR_GROUP_PLAYER)
 
+func _AttackHuman(a : Human, amount : int) -> void:
+	var blood : int = a.attack(amount)
+	PlayerData.add_blood(blood)
+
 func _HandleAction(direction : Actor.DIRECTION) -> void:
 	if actor is Parasite:
 		var target : Actor = actor.get_adjacent_actor(direction)
 		if target is Human:
 			if target.is_alive():
-				var life : int = target.attack(ATTACK_ENTER_AMOUNT)
-				print("ENTERING! Got ", life, " life!")
+				_AttackHuman(target, ATTACK_ENTER_AMOUNT)
 				actor.queue_free()
 				actor = target
 				actor.update_vision()
 				return
 			else:
-				var life : int = target.attack(ATTACK_EAT_AMOUNT)
-				print("EATING! Got ", life, " life!")
+				_AttackHuman(target, ATTACK_EAT_AMOUNT)
 				target.queue_free()
 	elif actor is Human and _mode == Mode.EXIT:
 		var parasite : Actor = PARASITE_SCENE.instantiate()
 		parasite.map = AStarTileMap.Get().get_ref()
 		if AStarTileMap.Add_Actor(parasite, actor.global_position, direction):
-			var life : int = actor.attack(ATTACK_EXIT_AMOUNT)
-			print("EXITING! Got ", life, " life!")
+			_AttackHuman(actor, ATTACK_EXIT_AMOUNT)
 			actor = parasite
 			return
 
@@ -123,9 +126,10 @@ func _EndAction() -> void:
 # "Virtual" Public Methods
 # ------------------------------------------------------------------------------
 func action() -> void:
-	if actor == null:
+	if actor == null or PlayerData.get_blood_level() <= 0:
 		_EndAction.call_deferred()
 	else:
+		PlayerData.start_of_action()
 		set_process_unhandled_input(true)
 
 # ------------------------------------------------------------------------------
@@ -135,4 +139,8 @@ func _on_actor_move_ended() -> void:
 	set_process_unhandled_input(false)
 	_EndAction.call_deferred()
 
+func _on_player_blood_changed(blood_level : int) -> void:
+	if actor != null and blood_level <= 0:
+		actor.kill()
+		_EndAction.call_deferred()
 

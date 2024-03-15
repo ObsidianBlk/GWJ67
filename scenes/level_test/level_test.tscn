@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bhsewn688jqaa"]
+[gd_scene load_steps=18 format=3 uid="uid://bhsewn688jqaa"]
 
 [ext_resource type="Script" path="res://scripts/shadowmap/shadowmap.gd" id="1_0qg00"]
 [ext_resource type="Script" path="res://scripts/nodes/player_controller.gd" id="1_4j0k5"]
@@ -13,6 +13,7 @@
 [ext_resource type="Shader" path="res://shaders/fog_of_war.gdshader" id="9_0iuy4"]
 [ext_resource type="Script" path="res://scripts/nodes/FOWTileMap.gd" id="9_1d4y7"]
 [ext_resource type="Script" path="res://scripts/nodes/scheduler.gd" id="11_l35es"]
+[ext_resource type="PackedScene" uid="uid://bupf7fw2053q" path="res://ui/hud/hud.tscn" id="14_x41en"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_dmjn6"]
 noise_type = 5
@@ -102,9 +103,9 @@ script = ExtResource("8_gbwkj")
 group_name = &"Patrol1"
 next_point = NodePath("../PatrolPoint")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="FOW" type="CanvasLayer" parent="."]
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="CanvasLayer"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="FOW"]
 material = SubResource("ShaderMaterial_br15s")
 anchors_preset = 15
 anchor_right = 1.0
@@ -113,19 +114,19 @@ grow_horizontal = 2
 grow_vertical = 2
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="CanvasLayer/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="FOW/SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
-[node name="FollowCamera2D" type="Camera2D" parent="CanvasLayer/SubViewportContainer/SubViewport"]
+[node name="FollowCamera2D" type="Camera2D" parent="FOW/SubViewportContainer/SubViewport"]
 zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 script = ExtResource("5_j8ivw")
 target_group = &"MasterCamera"
 
-[node name="FOWTileMap" type="TileMap" parent="CanvasLayer/SubViewportContainer/SubViewport" node_paths=PackedStringArray("parent_map")]
+[node name="FOWTileMap" type="TileMap" parent="FOW/SubViewportContainer/SubViewport" node_paths=PackedStringArray("parent_map")]
 y_sort_enabled = true
 tile_set = ExtResource("3_ic6pl")
 format = 2
@@ -139,3 +140,5 @@ parent_map = NodePath("../../../../TileMap")
 
 [node name="Scheduler" type="Node" parent="."]
 script = ExtResource("11_l35es")
+
+[node name="HUD" parent="." instance=ExtResource("14_x41en")]

@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 Settings="*res://scripts/autos/settings.gd"
 GAS="*res://scripts/autos/GAS.gd"
+PlayerData="*res://scripts/autos/player_data.gd"
 
 [file_customization]
 

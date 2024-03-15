@@ -1,0 +1,90 @@
+[gd_scene load_steps=12 format=3 uid="uid://c683bm1vbn87l"]
+
+[ext_resource type="Script" path="res://ui/blood_bar/blood_bar.gd" id="1_5vgin"]
+[ext_resource type="Shader" path="res://shaders/blend.gdshader" id="1_sfn5t"]
+[ext_resource type="Texture2D" uid="uid://di4vyrdy1d77f" path="res://assets/graphics/particles/light_02.png" id="1_sqpja"]
+[ext_resource type="Shader" path="res://shaders/percentage.gdshader" id="2_agcf8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dsd6j"]
+shader = ExtResource("2_agcf8")
+shader_parameter/percent = 1.0
+
+[sub_resource type="Gradient" id="Gradient_kxmfj"]
+offsets = PackedFloat32Array(0, 0.193642, 0.777457, 1)
+colors = PackedColorArray(0.533454, 0.0495439, 0.342308, 1, 0.87, 0.1131, 0.1131, 1, 0.87, 0.1131, 0.1131, 1, 0.533454, 0.0495439, 0.342308, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_2t8xm"]
+gradient = SubResource("Gradient_kxmfj")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_un1sr"]
+shader = ExtResource("1_sfn5t")
+
+[sub_resource type="Curve" id="Curve_jjdly"]
+_data = [Vector2(0, 0.0980505), 0.0, 0.0, 0, 0, Vector2(1, 0.291858), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_6rxwa"]
+curve = SubResource("Curve_jjdly")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hf3fs"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(115.2, 0, 0)
+emission_shape = 3
+emission_box_extents = Vector3(921.6, 1, 1)
+angle_max = 360.0
+direction = Vector3(0, 4, 0)
+gravity = Vector3(0, -98, 0)
+scale_min = 0.1
+scale_max = 0.25
+scale_curve = SubResource("CurveTexture_6rxwa")
+turbulence_enabled = true
+
+[node name="BloodBar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5vgin")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+material = SubResource("ShaderMaterial_dsd6j")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="CanvasLayer" type="CanvasLayer" parent="SubViewportContainer/SubViewport"]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="SubViewportContainer/SubViewport/CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture1D_2t8xm")
+expand_mode = 1
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="SubViewportContainer/SubViewport"]
+texture_filter = 4
+material = SubResource("ShaderMaterial_un1sr")
+position = Vector2(0, 648)
+amount = 400
+process_material = SubResource("ParticleProcessMaterial_hf3fs")
+texture = ExtResource("1_sqpja")
+lifetime = 30.0
+preprocess = 60.0
+randomness = 0.26
+
+[connection signal="size_changed" from="SubViewportContainer/SubViewport" to="." method="_on_viewport_size_changed"]

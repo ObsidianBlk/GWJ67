@@ -8,7 +8,7 @@ extends Node2D
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
-
+const INITIAL_LEVEL : String = "res://scenes/level_test/level_test.tscn"
 
 # ------------------------------------------------------------------------------
 # Export Variables
@@ -19,7 +19,7 @@ extends Node2D
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
-
+var _active_level : Node2D = null
 
 # ------------------------------------------------------------------------------
 # Onready Variables
@@ -66,6 +66,35 @@ func _Quit() -> void:
 		Settings.save()
 	get_tree().quit()
 
+func _UnloadActiveLevel() -> void:
+	if _active_level == null: return
+	remove_child(_active_level)
+	_active_level.queue_free()
+	_active_level = null
+
+func _LoadLevel(level_src : String) -> int:
+	# Load level's PackedScene
+	var level_scene : Resource = load(level_src)
+	if level_scene == null or not level_scene is PackedScene:
+		printerr("Failed to load scene, ", level_src)
+		return ERR_FILE_CANT_OPEN
+	
+	# Instantiate the level scene.
+	var level_node : Node2D = level_scene.instantiate()
+	if level_node == null or not level_node is Level:
+		printerr("Failed to instantiate node or node is not Level type.")
+		return ERR_CANT_CREATE
+	
+	# Unload any current level that may be loaded.
+	_UnloadActiveLevel()
+	
+	# Add the new level node to the scene. We should be off to the races now!
+	_active_level = level_node
+	_active_level.process_mode = Node.PROCESS_MODE_PAUSABLE
+	add_child(_active_level)
+	
+	return OK
+
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
@@ -78,6 +107,10 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 	if ui == null:
 		return
 	match action:
+		UILayer.REQUEST_START_GAME:
+			if _active_level != null: return # Don't start a new game if we're running one.
+			_LoadLevel(INITIAL_LEVEL)
+			ui.close_all()
 		UILayer.REQUEST_QUIT_APPLICATION:
 			_Quit()
 		UILayer.REQUEST_QUIT_TO_MAIN:

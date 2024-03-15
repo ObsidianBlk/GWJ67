@@ -51,7 +51,7 @@ extends UIControl
 # ------------------------------------------------------------------------------
 
 func _on_btn_start_pressed() -> void:
-	pass # Replace with function body.
+	request(UILayer.REQUEST_START_GAME)
 
 func _on_btn_options_pressed() -> void:
 	if options_menu_name == &"": return
