@@ -1,7 +1,8 @@
-[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://dpjovv8alo7wc"]
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://dpjovv8alo7wc"]
 
 [ext_resource type="Texture2D" uid="uid://c5qtk5x2v4e14" path="res://assets/graphics/tileset/floors.png" id="1_i4mh1"]
 [ext_resource type="Texture2D" uid="uid://8oifxctt0ca" path="res://assets/graphics/tileset/walls.png" id="2_d27jc"]
+[ext_resource type="Texture2D" uid="uid://ihtxwe8irmqo" path="res://assets/graphics/tileset/objects.png" id="3_u0vwh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_22ibg"]
 resource_name = "Iso Floors"
@@ -477,9 +478,23 @@ texture_region_size = Vector2i(16, 48)
 2:0/3/modulate = Color(1, 0.709804, 0.694118, 1)
 2:0/3/y_sort_origin = -8
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mywhn"]
+texture = ExtResource("3_u0vwh")
+texture_region_size = Vector2i(32, 48)
+1:0/0 = 0
+1:0/0/texture_origin = Vector2i(0, 12)
+1:0/0/y_sort_origin = -8
+1:0/0/custom_data_0 = true
+1:0/0/custom_data_1 = true
+
 [resource]
 tile_shape = 1
 tile_layout = 5
 tile_size = Vector2i(32, 16)
+custom_data_layer_0/name = "block_movement"
+custom_data_layer_0/type = 1
+custom_data_layer_1/name = "block_sight"
+custom_data_layer_1/type = 1
 sources/0 = SubResource("TileSetAtlasSource_22ibg")
 sources/1 = SubResource("TileSetAtlasSource_yjd1a")
+sources/2 = SubResource("TileSetAtlasSource_mywhn")

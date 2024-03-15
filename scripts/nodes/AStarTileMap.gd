@@ -9,12 +9,14 @@ signal astar_changed()
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
+const CUSTOM_DATA_BLOCKING : String = "block_movement"
 
 # ------------------------------------------------------------------------------
 # Export Variables
 # ------------------------------------------------------------------------------
 @export_category("A-Star TileMap")
 @export var floor_layer_name : String = ""
+@export var objects_layer_name : String = ""
 
 
 # ------------------------------------------------------------------------------
@@ -68,10 +70,22 @@ func _RegisterActors() -> void:
 	for child : Node in get_children():
 		_on_child_entered_tree(child)
 
+func _IsCellBlocking(cell : Vector2i, layer : int) -> bool:
+	var cdata : TileData = get_cell_tile_data(layer, cell)
+	if cdata != null:
+		var custom : Variant = cdata.get_custom_data(CUSTOM_DATA_BLOCKING)
+		if typeof(custom) == TYPE_BOOL:
+			return custom
+	return false
+
 func _BuildAStarGrid() -> void:
 	var layer_index : int = get_layer_index_from_name(floor_layer_name)
 	if layer_index < 0:
 		return
+	
+	var obj_layer_index : int = -1
+	if not objects_layer_name.is_empty():
+		obj_layer_index = get_layer_index_from_name(objects_layer_name)
 	
 	_astar.clear()
 	_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
@@ -81,8 +95,8 @@ func _BuildAStarGrid() -> void:
 	_astar.fill_solid_region(maprect, true)
 	var cells :Array[Vector2i] = get_used_cells(layer_index)
 	for cell in cells:
-		# TODO: Actually check data layer to see if the cell is still solid.
-		_astar.set_point_solid(cell, false)
+		if not _IsCellBlocking(cell, layer_index) and not _IsCellBlocking(cell, obj_layer_index):
+			_astar.set_point_solid(cell, false)
 	astar_changed.emit()
 
 func _RemoveRegion(region_name : StringName) -> void:

@@ -20,7 +20,8 @@ class_name Shadowmap
 # ------------------------------------------------------------------------------
 @export_category("Shadow Map")
 @export var map : TileMap = null
-@export var layer : int = 0
+@export var blocking_data_name : String = ""
+@export var layers : Array[int] = [0]
 
 # ------------------------------------------------------------------------------
 # Variables
@@ -58,22 +59,34 @@ func _exit_tree() -> void:
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
+func _IsBlocking(tdata : TileData) -> bool:
+	if blocking_data_name.is_empty(): return false
+	var blocking : Variant = tdata.get_custom_data(blocking_data_name)
+	if typeof(blocking) == TYPE_BOOL:
+		return blocking
+	return false
+
 func _IsWall(q : ShadowQuadrent, coord : Variant) -> bool:
 	if map != null and typeof(coord) == TYPE_VECTOR2I:
 		var map_coord : Vector2i = q.transform(coord)
-		var tdata : TileData = map.get_cell_tile_data(layer, map_coord)
-		if tdata == null:
-			return true # A non-cell is considered a wall for this project.
-		# TODO: Check tdata for a custom "wall" data, but otherwise assume it's a floor.
+		for layer : int in layers:
+			var tdata : TileData = map.get_cell_tile_data(layer, map_coord)
+			if tdata == null:
+				return true # A non-cell is considered a wall for this project.
+			if _IsBlocking(tdata):
+				return true
 	return false
 
 func _IsFloor(q : ShadowQuadrent, coord : Variant) -> bool:
 	if map != null and typeof(coord) == TYPE_VECTOR2I:
+		var blocking = false
 		var map_coord : Vector2i = q.transform(coord)
-		var tdata : TileData = map.get_cell_tile_data(layer, map_coord)
-		if tdata != null:
-			# TODO: Check to see if there's a custom "wall" data, but otherwise assume this is a floor.
-			return true
+		for layer : int in layers:
+			var tdata : TileData = map.get_cell_tile_data(layer, map_coord)
+			if tdata != null:
+				if _IsBlocking(tdata):
+					blocking = true
+		return not blocking
 	return false
 
 func _Scan(viz : Array[Vector2i], q : ShadowQuadrent, row : ShadowRow, depth : int) -> void:
