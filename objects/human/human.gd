@@ -29,6 +29,7 @@ const ANIM_DEAD : StringName = &"dead"
 # Onready Variables
 # ------------------------------------------------------------------------------
 @onready var _asprite_2d : AnimatedSprite2D = $AnimatedSprite2D
+@onready var _selection_arrow: Node2D = %SelectionArrow
 
 
 # ------------------------------------------------------------------------------
@@ -70,14 +71,20 @@ func _UpdateAnimation() -> void:
 # "Virtual" Private Methods
 # ------------------------------------------------------------------------------
 func _MoveEnded() -> void:
+	_selection_arrow.visible = false
 	_UpdateVisionArea()
 
 func _TurnEnded() -> void:
+	_selection_arrow.visible = false
 	_UpdateVisionArea()
 
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
+func show_selection() -> void:
+	if is_alive():
+		_selection_arrow.visible = true
+
 func move(dir : Actor.DIRECTION) -> void:
 	if map == null or _tweening: return
 	var turns : int = get_turns_to_facing(dir)
@@ -98,12 +105,14 @@ func update_vision() -> void:
 func attack(amount : int = 1) -> int:
 	amount = amount if amount <= life else life
 	life -= amount
+	_selection_arrow.visible = false
 	_UpdateAnimation()
 	_UpdateVisionArea()
 	return amount
 
 func kill() -> void:
 	life = 0
+	_selection_arrow.visible = false
 	_UpdateAnimation()
 	_UpdateVisionArea()
 

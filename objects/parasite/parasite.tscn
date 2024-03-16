@@ -1,4 +1,4 @@
-[gd_scene load_steps=75 format=3 uid="uid://xk07rgerivmc"]
+[gd_scene load_steps=76 format=3 uid="uid://xk07rgerivmc"]
 
 [ext_resource type="Script" path="res://objects/parasite/parasite.gd" id="1_f6c4c"]
 [ext_resource type="Texture2D" uid="uid://bl2yqvwposjam" path="res://assets/graphics/parasite/dead.png" id="2_8pc26"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dagymxjpmr7ka" path="res://assets/graphics/parasite/north.png" id="8_vpg30"]
 [ext_resource type="Texture2D" uid="uid://dikukxsfyjhve" path="res://assets/graphics/parasite/south.png" id="9_oogrv"]
 [ext_resource type="Texture2D" uid="uid://btvdeblmk4skt" path="res://assets/graphics/parasite/west.png" id="10_lxn1u"]
+[ext_resource type="PackedScene" uid="uid://dl0wxjdj57435" path="res://objects/selection_arrow/selection_arrow.tscn" id="11_86jbt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7a41r"]
 atlas = ExtResource("2_8pc26")
@@ -509,5 +510,11 @@ sprite_frames = SubResource("SpriteFrames_cffam")
 animation = &"west"
 autoplay = "idle"
 offset = Vector2(0, -12)
+
+[node name="SelectionArrow" parent="." instance=ExtResource("11_86jbt")]
+unique_name_in_owner = true
+z_index = 100
+z_as_relative = false
+position = Vector2(0, -14)
 
 [connection signal="animation_finished" from="ASprite2D" to="." method="_on_a_sprite_2d_animation_finished"]

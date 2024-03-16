@@ -35,6 +35,7 @@ var _alive : bool = true
 # Onready Variables
 # ------------------------------------------------------------------------------
 @onready var _asprite_2d: AnimatedSprite2D = $ASprite2D
+@onready var _selection_arrow: Node2D = %SelectionArrow
 
 
 # ------------------------------------------------------------------------------
@@ -79,6 +80,7 @@ func _PlayIdle() -> void:
 # "Virtual" Private Methods
 # ------------------------------------------------------------------------------
 func _MoveEnded() -> void:
+	_selection_arrow.visible = false
 	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
 	if fow == null: return
 	fow.set_region(Settings.FOW_REGION_NAME, compute_sight(), 1)
@@ -86,11 +88,16 @@ func _MoveEnded() -> void:
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
+func show_selection() -> void:
+	if _alive:
+		_selection_arrow.visible = true
+
 func attack(_amount : int = 1) -> int:
 	kill()
 	return 1
 
 func kill() -> void:
+	_selection_arrow.visible = false
 	_alive = false
 	_asprite_2d.play(ANIM_DEAD)
 	#queue_free()

@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://kom5168dm0gg"]
+[gd_scene load_steps=6 format=3 uid="uid://kom5168dm0gg"]
 
 [ext_resource type="Texture2D" uid="uid://bbap20kr44a15" path="res://assets/graphics/character/Bean.png" id="1_73m5q"]
 [ext_resource type="Script" path="res://objects/human/human.gd" id="1_cs14g"]
 [ext_resource type="Texture2D" uid="uid://dfynj4t26rhkm" path="res://assets/graphics/character/BeanDead.png" id="3_5lrwi"]
+[ext_resource type="PackedScene" uid="uid://dl0wxjdj57435" path="res://objects/selection_arrow/selection_arrow.tscn" id="4_sgvju"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_jevyo"]
 animations = [{
@@ -26,12 +27,14 @@ animations = [{
 [node name="Human" type="Node2D"]
 script = ExtResource("1_cs14g")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
-texture = ExtResource("1_73m5q")
-offset = Vector2(1, -6)
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_jevyo")
 animation = &"idle"
 offset = Vector2(1, -6)
+
+[node name="SelectionArrow" parent="." instance=ExtResource("4_sgvju")]
+unique_name_in_owner = true
+visible = false
+z_index = 100
+z_as_relative = false
+position = Vector2(0, -28)

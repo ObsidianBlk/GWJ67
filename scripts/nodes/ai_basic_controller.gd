@@ -123,6 +123,8 @@ func action() -> void:
 		_EndAction.call_deferred()
 		return
 	
+	actor.show_selection()
+	
 	if not actor.has_path() and _target_point != null:
 		actor.set_path_to(_target_point.global_position)
 	

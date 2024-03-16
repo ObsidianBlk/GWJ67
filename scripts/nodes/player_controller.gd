@@ -114,19 +114,21 @@ func _HandleAction(direction : Actor.DIRECTION) -> void:
 				actor.queue_free()
 				actor = target
 				actor.update_vision()
+				_EndAction.call_deferred()
 				return
 			else:
 				_AttackHuman(target, ATTACK_EAT_AMOUNT)
 				target.queue_free()
 		elif target is LevelExit:
 			target.use()
-			_EndAction()
+			_EndAction.call_deferred()
 	elif actor is Human and _mode == Mode.EXIT:
 		var parasite : Actor = PARASITE_SCENE.instantiate()
 		parasite.map = AStarTileMap.Get().get_ref()
 		if AStarTileMap.Add_Actor(parasite, actor.global_position, direction):
 			_AttackHuman(actor, ATTACK_EXIT_AMOUNT)
 			actor = parasite
+			_EndAction.call_deferred()
 			return
 
 	actor.move(direction)
@@ -145,7 +147,9 @@ func action() -> void:
 	if not _IsAlive() or PlayerData.get_blood_level() <= 0:
 		_EndAction.call_deferred()
 	else:
-		PlayerData.start_of_action()
+		actor.show_selection()
+		if actor is Parasite:
+			PlayerData.start_of_action()
 		set_process_unhandled_input(true)
 
 # ------------------------------------------------------------------------------
