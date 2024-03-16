@@ -8,7 +8,9 @@ extends Node2D
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
-const INITIAL_LEVEL : String = "res://scenes/level_test/level_test.tscn"
+const MAIN_MENU : StringName = &"MainMenu"
+
+const INITIAL_LEVEL : String = "res://scenes/level_001/level_001.tscn"
 
 # ------------------------------------------------------------------------------
 # Export Variables
@@ -68,6 +70,10 @@ func _Quit() -> void:
 
 func _UnloadActiveLevel() -> void:
 	if _active_level == null: return
+	
+	if _active_level.requested.is_connected(_on_requested):
+		_active_level.requested.disconnect(_on_requested)
+	
 	remove_child(_active_level)
 	_active_level.queue_free()
 	_active_level = null
@@ -91,6 +97,9 @@ func _LoadLevel(level_src : String) -> int:
 	# Add the new level node to the scene. We should be off to the races now!
 	_active_level = level_node
 	_active_level.process_mode = Node.PROCESS_MODE_PAUSABLE
+	if not _active_level.requested.is_connected(_on_requested):
+		_active_level.requested.connect(_on_requested)
+	
 	add_child(_active_level)
 	
 	return OK
@@ -109,11 +118,39 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 	match action:
 		UILayer.REQUEST_START_GAME:
 			if _active_level != null: return # Don't start a new game if we're running one.
-			_LoadLevel(INITIAL_LEVEL)
-			ui.close_all()
+			if _LoadLevel(INITIAL_LEVEL) != OK:
+				ui.open_notify_dialog(
+					"Level Load Failure",
+					"Failed to load the initial level. This is a serious issue.\nHAVE FUN!!",
+					UILayer.REQUEST_CLOSE_UI
+				)
+			else:
+				ui.close_all()
 		UILayer.REQUEST_QUIT_APPLICATION:
 			_Quit()
 		UILayer.REQUEST_QUIT_TO_MAIN:
-			pass
+			_UnloadActiveLevel()
+			ui.close_all()
+			ui.show_ui(MAIN_MENU)
+		Level.REQUEST_NEXT_LEVEL:
+			if Util.Is_Dict_Property_Type(payload, "level_src", TYPE_STRING):
+				if _LoadLevel(payload["level_src"]) != OK:
+					ui.open_notify_dialog(
+						"Level Load Failure",
+						"Failed to load the next level.\nNot much to be done now.\nExit to Main Menu and abandon all hope of finishing this game.",
+						UILayer.REQUEST_CLOSE_UI
+					)
+		Level.REQUEST_GAME_SUCCESS:
+			ui.open_notify_dialog(
+				"You Succeeded",
+				"Nice! You found a way out!\n*Gives a nice pat on the back*",
+				UILayer.REQUEST_QUIT_TO_MAIN
+			)
+		Level.REQUEST_GAME_FAILURE:
+			ui.open_notify_dialog(
+				"You Failed",
+				"Well... You suck...\nBetter luck next time!",
+				UILayer.REQUEST_QUIT_TO_MAIN
+			)
 
 

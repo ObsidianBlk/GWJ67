@@ -223,5 +223,7 @@ func _on_child_exiting_tree(child : Node) -> void:
 	_ClearActorCells(child)
 
 func _on_actor_move_ended(actor : Actor) -> void:
-	var coord : Vector2i = local_to_map(actor.global_position)
-	_OccupyCell(actor, coord)
+	if actor == null: return
+	if actor.blocking:
+		var coord : Vector2i = local_to_map(actor.global_position)
+		_OccupyCell(actor, coord)

@@ -12,6 +12,9 @@ class_name Parasite
 const ANIM_IDLE_1 : StringName = &"idle"
 const ANIM_IDLE_2 : StringName = &"idle_bounce"
 const ANIM_IDLE_3 : StringName = &"idle_look"
+const ANIM_IDLE_4 : StringName = &"idle_blink"
+
+const ANIM_DEAD : StringName = &"dead"
 
 const ANIM_NORTH : StringName = &"north"
 const ANIM_SOUTH : StringName = &"south"
@@ -26,7 +29,7 @@ const ANIM_WEST : StringName = &"west"
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
-
+var _alive : bool = true
 
 # ------------------------------------------------------------------------------
 # Onready Variables
@@ -51,7 +54,10 @@ func _enter_tree() -> void:
 
 func _process(delta: float) -> void:
 	if not _tweening:
-		_PlayIdle()
+		if _alive:
+			_PlayIdle()
+		elif not _asprite_2d.animation == ANIM_DEAD:
+			_asprite_2d.play(ANIM_DEAD)
 
 # ------------------------------------------------------------------------------
 # Private Methods
@@ -63,8 +69,10 @@ func _PlayIdle() -> void:
 			var possibility = randf_range(0.0, 1000.0)
 			if possibility < 100.0:
 				anim = ANIM_IDLE_3
-				if possibility < 50.0:
-					anim = ANIM_IDLE_2
+			if possibility < 75.0:
+				anim = ANIM_IDLE_4
+			if possibility < 50.0:
+				anim = ANIM_IDLE_2
 			_asprite_2d.play(anim)
 				
 	else:
@@ -86,7 +94,11 @@ func attack(_amount : int = 1) -> int:
 	return 1
 
 func kill() -> void:
-	queue_free()
+	_alive = false
+	#queue_free()
+
+func is_alive() -> bool:
+	return _alive
 
 # ------------------------------------------------------------------------------
 # Handler Methods

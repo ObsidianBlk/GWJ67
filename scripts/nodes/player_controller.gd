@@ -109,6 +109,9 @@ func _HandleAction(direction : Actor.DIRECTION) -> void:
 			else:
 				_AttackHuman(target, ATTACK_EAT_AMOUNT)
 				target.queue_free()
+		elif target is LevelExit:
+			target.use()
+			_EndAction()
 	elif actor is Human and _mode == Mode.EXIT:
 		var parasite : Actor = PARASITE_SCENE.instantiate()
 		parasite.map = AStarTileMap.Get().get_ref()
@@ -119,6 +122,10 @@ func _HandleAction(direction : Actor.DIRECTION) -> void:
 
 	actor.move(direction)
 
+func _IsAlive() -> bool:
+	if actor == null or not actor.has_method("is_alive"): return false
+	return actor.is_alive()
+
 func _EndAction() -> void:
 	action_complete.emit()
 
@@ -126,7 +133,7 @@ func _EndAction() -> void:
 # "Virtual" Public Methods
 # ------------------------------------------------------------------------------
 func action() -> void:
-	if actor == null or PlayerData.get_blood_level() <= 0:
+	if not _IsAlive() or PlayerData.get_blood_level() <= 0:
 		_EndAction.call_deferred()
 	else:
 		PlayerData.start_of_action()

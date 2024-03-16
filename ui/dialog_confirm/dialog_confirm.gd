@@ -24,6 +24,9 @@ const DEFAULT_CONTENT_LABEL : String = "Are you sure?"
 var _yes_action : StringName = &""
 var _yes_payload : Dictionary = {}
 
+var _no_action : StringName = &""
+var _no_payload : Dictionary = {}
+
 # ------------------------------------------------------------------------------
 # Onready Variables
 # ------------------------------------------------------------------------------
@@ -63,13 +66,19 @@ func _visibility_updating(data : Dictionary) -> void:
 		var option : int = DEFAULT_OPTION_NO
 		_yes_action = &""
 		_yes_payload = {}
+		_no_action = &""
+		_no_payload = {}
 		_lbl_titlebar.text = DEFAULT_TITLEBAR_LABEL
 		_lbl_content.text = DEFAULT_CONTENT_LABEL
 		
-		if Util.Is_Dict_Property_Type(data, "action", TYPE_STRING_NAME):
-			_yes_action = data["action"]
-		if Util.Is_Dict_Property_Type(data, "payload", TYPE_DICTIONARY):
-			_yes_payload = data["payload"]
+		if Util.Is_Dict_Property_Type(data, "yes_action", TYPE_STRING_NAME):
+			_yes_action = data["yes_action"]
+		if Util.Is_Dict_Property_Type(data, "yes_payload", TYPE_DICTIONARY):
+			_yes_payload = data["yes_payload"]
+		if Util.Is_Dict_Property_Type(data, "no_action", TYPE_STRING_NAME):
+			_no_action = data["no_action"]
+		if Util.Is_Dict_Property_Type(data, "no_payload", TYPE_DICTIONARY):
+			_no_payload = data["no_payload"]
 		if Util.Is_Dict_Property_Type(data, "title", TYPE_STRING):
 			_lbl_titlebar.text = data["title"]
 		if Util.Is_Dict_Property_Type(data, "content", TYPE_STRING):
@@ -88,7 +97,10 @@ func _visibility_updating(data : Dictionary) -> void:
 # ------------------------------------------------------------------------------
 
 func _on_btn_no_pressed() -> void:
-	request(UILayer.REQUEST_CLOSE_UI)
+	if _no_action == &"":
+		request(UILayer.REQUEST_CLOSE_UI)
+	else:
+		request(_no_action, _no_payload)
 
 func _on_btn_yes_pressed() -> void:
 	if _yes_action == &"": return

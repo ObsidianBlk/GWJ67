@@ -25,6 +25,7 @@ const WALK_DURATION : float = 0.5
 @export var map : AStarTileMap = null
 @export var initial_facing : DIRECTION = DIRECTION.North
 @export var hidden_in_fow : bool = true
+@export var blocking : bool = true
 @export_subgroup("Sight Range")
 @export_range(0, 10) var sight_foreward : int = 3
 @export_range(0, 10) var sight_backward : int = 3

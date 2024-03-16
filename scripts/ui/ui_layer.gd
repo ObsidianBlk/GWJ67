@@ -99,6 +99,32 @@ func close_all() -> void:
 		_breadcrumbs.clear()
 		active_ui_changed.emit(&"")
 
+func open_confirm_dialog(title : String, content : String, action_options : Dictionary = {}) -> void:
+	var ui_data : Dictionary = {
+		"title":title,
+		"content":content
+	}
+	if Util.Is_Dict_Property_Type(action_options, "yes_action", TYPE_STRING_NAME):
+		ui_data["yes_action"] = action_options["yes_action"]
+	if Util.Is_Dict_Property_Type(action_options, "yes_payload", TYPE_DICTIONARY):
+		ui_data["yes_payload"] = action_options["yes_payload"]
+	if Util.Is_Dict_Property_Type(action_options, "no_action", TYPE_STRING_NAME):
+		ui_data["no_action"] = action_options["no_action"]
+	if Util.Is_Dict_Property_Type(action_options, "no_payload", TYPE_DICTIONARY):
+		ui_data["no_payload"] = action_options["no_payload"]
+		
+	show_ui(&"DialogConfirm", ui_data)
+
+
+func open_notify_dialog(title : String, content : String, action : StringName, payload : Dictionary = {}) -> void:
+	var ui_data : Dictionary = {
+		"title":title,
+		"content":content,
+		"ok_action":action,
+		"ok_payload":payload
+	}
+	show_ui(&"DialogNotify", ui_data)
+
 # --------------------------------------------------------------------------------------------------
 # Handler Methods
 # --------------------------------------------------------------------------------------------------

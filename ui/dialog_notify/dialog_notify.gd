@@ -1,62 +1,72 @@
-extends Node2D
-class_name Level
+extends UIControl
 
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
-signal requested(action : StringName, payload : Dictionary)
+
 
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
-const GROUP_LEVEL_EXIT : StringName = &"LevelExit"
-
-const REQUEST_NEXT_LEVEL : StringName = &"next_level"
-const REQUEST_GAME_SUCCESS : StringName = &"game_success"
-const REQUEST_GAME_FAILURE : StringName = &"game_failure"
+const DEFAULT_TITLEBAR_LABEL : String = "Dialog"
+const DEFAULT_CONTENT_LABEL : String = "You have been notified"
+const DEFAULT_OK_ACTION : StringName = UILayer.REQUEST_CLOSE_UI
 
 # ------------------------------------------------------------------------------
 # Export Variables
 # ------------------------------------------------------------------------------
-@export_category("Level")
+
 
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
+var _ok_action : StringName = &""
+var _ok_payload : Dictionary = {}
 
 # ------------------------------------------------------------------------------
 # Onready Variables
 # ------------------------------------------------------------------------------
+@onready var _lbl_titlebar: Label = %LBL_Titlebar
+@onready var _lbl_content: Label = %LBL_Content
+@onready var _btn_ok: Button = %BTN_OK
 
 
 # ------------------------------------------------------------------------------
 # Setters / Getters
 # ------------------------------------------------------------------------------
 
+
 # ------------------------------------------------------------------------------
 # Override Methods
 # ------------------------------------------------------------------------------
-func _ready() -> void:
-	_ConnectLevelExits()
 
-#func _enter_tree() -> void:
-	#_ConnectLevelExits()
 
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
-func _ConnectLevelExits() -> void:
-	var actors : Array[Node] = get_tree().get_nodes_in_group(GROUP_LEVEL_EXIT)
-	for actor : Node in actors:
-		if actor is LevelExit:
-			if not actor.level_exit_requested.is_connected(_on_level_exit_requested):
-				actor.level_exit_requested.connect(_on_level_exit_requested)
-			if not actor.final_exit_requested.is_connected(_on_final_level_requested):
-				actor.final_exit_requested.connect(_on_final_level_requested)
+func _FocusControl() -> void:
+	_btn_ok.grab_focus()
 
-
-func _Request(action : StringName, payload : Dictionary = {}) -> void:
-	requested.emit(action, payload)
+# ------------------------------------------------------------------------------
+# "Virtual" Private Methods
+# ------------------------------------------------------------------------------
+func _visibility_updating(data : Dictionary) -> void:
+	if not visible:
+		_lbl_titlebar.text = DEFAULT_TITLEBAR_LABEL
+		_lbl_content.text = DEFAULT_CONTENT_LABEL
+		_ok_action = &""
+		_ok_payload = {}
+		
+		if Util.Is_Dict_Property_Type(data, "ok_action", TYPE_STRING_NAME):
+			_ok_action = data["ok_action"]
+		if Util.Is_Dict_Property_Type(data, "ok_payload", TYPE_DICTIONARY):
+			_ok_payload = data["ok_payload"]
+		if Util.Is_Dict_Property_Type(data, "title", TYPE_STRING):
+			_lbl_titlebar.text = data["title"]
+		if Util.Is_Dict_Property_Type(data, "content", TYPE_STRING):
+			_lbl_content.text = data["content"]
+		
+		_FocusControl.call_deferred()
 
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -66,9 +76,8 @@ func _Request(action : StringName, payload : Dictionary = {}) -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
-func _on_level_exit_requested(level_src : String) -> void:
-	_Request.call_deferred(REQUEST_NEXT_LEVEL, {"level_src":level_src})
-
-func _on_final_level_requested() -> void:
-	_Request.call_deferred(REQUEST_GAME_SUCCESS)
-
+func _on_btn_ok_pressed() -> void:
+	if _ok_action == &"":
+		request(DEFAULT_OK_ACTION)
+	else:
+		request(_ok_action, _ok_payload)

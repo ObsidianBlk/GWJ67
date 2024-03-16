@@ -61,7 +61,7 @@ func _on_btn_quit_pressed() -> void:
 	request(UILayer.REQUEST_SHOW_UI, {
 		"ui_name":&"DialogConfirm",
 		"ui_data":{
-			"action": UILayer.REQUEST_QUIT_APPLICATION,
+			"yes_action": UILayer.REQUEST_QUIT_APPLICATION,
 			"title": "Quit Game",
 			"content": "Are you sure you want to quit the game?"
 		}

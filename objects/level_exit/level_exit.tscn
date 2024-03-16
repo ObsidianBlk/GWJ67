@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://wp5wy4d0mcjv"]
+
+[ext_resource type="Script" path="res://objects/level_exit/level_exit.gd" id="1_13t1s"]
+[ext_resource type="Texture2D" uid="uid://twubxu42xenc" path="res://assets/graphics/tileset/tile_selector.png" id="1_b7j1n"]
+
+[node name="LevelExit" type="Node2D" groups=["LevelExit"]]
+script = ExtResource("1_13t1s")
+sight_foreward = 0
+sight_backward = 0
+sight_left = 0
+sight_right = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 3
+texture = ExtResource("1_b7j1n")

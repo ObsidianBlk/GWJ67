@@ -1,17 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://c3p0rqkha82y4"]
+[gd_scene load_steps=3 format=3 uid="uid://y0gx7ugbw0r4"]
 
-[ext_resource type="Theme" uid="uid://l28o45infhdy" path="res://ui/game.theme" id="1_8l8xy"]
-[ext_resource type="Script" path="res://ui/dialog_confirm/dialog_confirm.gd" id="1_lmp8l"]
+[ext_resource type="Theme" uid="uid://l28o45infhdy" path="res://ui/game.theme" id="1_t821i"]
+[ext_resource type="Script" path="res://ui/dialog_notify/dialog_notify.gd" id="2_4fhuw"]
 
-[node name="DialogConfirm" type="Control"]
+[node name="DialogNotify" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_8l8xy")
-script = ExtResource("1_lmp8l")
+theme = ExtResource("1_t821i")
+script = ExtResource("2_4fhuw")
 
 [node name="Layout" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -35,7 +35,7 @@ theme_type_variation = &"DialogPanelTitlebar"
 [node name="LBL_Titlebar" type="Label" parent="Layout/Titlebar"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Spiffy Titlebar Label"
+text = "Some Spiffy Title"
 horizontal_alignment = 1
 
 [node name="Content" type="PanelContainer" parent="Layout"]
@@ -45,32 +45,28 @@ theme_type_variation = &"DialogPanelBody"
 [node name="LBL_Content" type="Label" parent="Layout/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Message goes here, I suppose"
+text = "Some really nice content should go here!"
 horizontal_alignment = 1
 
 [node name="Options" type="PanelContainer" parent="Layout"]
 layout_mode = 2
 theme_type_variation = &"DialogPanelFooter"
 
-[node name="HBC" type="HBoxContainer" parent="Layout/Options"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Layout/Options"]
 layout_mode = 2
 
-[node name="BTN_Yes" type="Button" parent="Layout/Options/HBC"]
+[node name="Spacer1" type="Control" parent="Layout/Options/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BTN_OK" type="Button" parent="Layout/Options/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Yes"
+text = "OK"
 
-[node name="Spacer" type="Control" parent="Layout/Options/HBC"]
+[node name="Spacer2" type="Control" parent="Layout/Options/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BTN_No" type="Button" parent="Layout/Options/HBC"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "No
-"
-
-[connection signal="pressed" from="Layout/Options/HBC/BTN_Yes" to="." method="_on_btn_yes_pressed"]
-[connection signal="pressed" from="Layout/Options/HBC/BTN_No" to="." method="_on_btn_no_pressed"]
+[connection signal="pressed" from="Layout/Options/HBoxContainer/BTN_OK" to="." method="_on_btn_ok_pressed"]
