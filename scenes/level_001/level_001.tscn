@@ -60,6 +60,7 @@ objects_layer_name = "Objects"
 
 [node name="LevelExit" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("6_psqgo")]
 position = Vector2(-97, -81)
+level_src = "res://scenes/level_002/level_002.tscn"
 map = NodePath("..")
 initial_facing = 1
 

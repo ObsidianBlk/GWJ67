@@ -1,0 +1,106 @@
+[gd_scene load_steps=15 format=3 uid="uid://dfh7dgeltfpds"]
+
+[ext_resource type="Script" path="res://scripts/nodes/level.gd" id="1_xx4mv"]
+[ext_resource type="Script" path="res://scripts/nodes/scheduler.gd" id="2_liak2"]
+[ext_resource type="Script" path="res://scripts/nodes/player_controller.gd" id="3_kc25b"]
+[ext_resource type="Script" path="res://scripts/shadowmap/shadowmap.gd" id="3_mm0lc"]
+[ext_resource type="TileSet" uid="uid://dpjovv8alo7wc" path="res://assets/graphics/tileset/tileset_001.tres" id="4_xrrv8"]
+[ext_resource type="Script" path="res://scripts/nodes/AStarTileMap.gd" id="5_52aqs"]
+[ext_resource type="Script" path="res://scripts/nodes/follow_camera2d.gd" id="7_lw3ol"]
+[ext_resource type="PackedScene" uid="uid://xk07rgerivmc" path="res://objects/parasite/parasite.tscn" id="7_p5xpa"]
+[ext_resource type="PackedScene" uid="uid://wp5wy4d0mcjv" path="res://objects/level_exit/level_exit.tscn" id="8_hh4fk"]
+[ext_resource type="Shader" path="res://shaders/fog_of_war.gdshader" id="8_vgwcy"]
+[ext_resource type="Texture2D" uid="uid://dkycrhtksk41s" path="res://assets/noise_fow_edging.tres" id="9_odhbu"]
+[ext_resource type="Script" path="res://scripts/nodes/FOWTileMap.gd" id="10_ojmx5"]
+[ext_resource type="PackedScene" uid="uid://bupf7fw2053q" path="res://ui/hud/hud.tscn" id="11_u2h4j"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g4kv1"]
+shader = ExtResource("8_vgwcy")
+shader_parameter/background_color = Color(0, 0, 0, 1)
+shader_parameter/speed = 0.25
+shader_parameter/width = 5.0
+shader_parameter/pattern = 1
+shader_parameter/noise = ExtResource("9_odhbu")
+
+[node name="Level_002" type="Node2D"]
+script = ExtResource("1_xx4mv")
+
+[node name="Scheduler" type="Node" parent="."]
+script = ExtResource("2_liak2")
+
+[node name="Shadowmap" type="Node" parent="." node_paths=PackedStringArray("map")]
+script = ExtResource("3_mm0lc")
+map = NodePath("../AStarTileMap")
+blocking_data_name = "block_sight"
+
+[node name="PlayerController" type="Node" parent="." node_paths=PackedStringArray("actor")]
+script = ExtResource("3_kc25b")
+actor = NodePath("../AStarTileMap/Parasite")
+
+[node name="AStarTileMap" type="TileMap" parent="."]
+y_sort_enabled = true
+texture_filter = 3
+tile_set = ExtResource("4_xrrv8")
+format = 2
+layer_0/name = "Floors"
+layer_0/y_sort_enabled = true
+layer_0/tile_data = PackedInt32Array(65534, 196608, 2, 65535, 196608, 2, 0, 196608, 2, -3, 458752, 3, -65540, 458752, 3, -131077, 458752, 3, 131069, 524288, 3, 196604, 524288, 3, 262139, 524288, 3, -131078, 393216, 3, -65543, 393216, 3, -8, 393216, 3, 262138, 327680, 3, 196601, 327680, 3, 131064, 327680, 3, 65528, 65536, 3, -65542, 65536, 0, -6, 65536, 0, 65530, 65536, 0, 131066, 65536, 0, 196602, 65536, 0, -7, 65536, 0, 65529, 65536, 0, 131065, 65536, 0, -65541, 65536, 0, -5, 65536, 0, 65531, 131072, 0, 131067, 65536, 0, 196603, 65536, 0, -4, 65536, 0, 65532, 65536, 0, 131068, 65536, 0, 65533, 65536, 0)
+layer_1/name = "Walls"
+layer_1/y_sort_enabled = true
+layer_1/tile_data = PackedInt32Array(-131078, 131073, 0, -65543, 131073, 0, -8, 131073, 0, 65528, 1, 1, 131064, 1, 1, -131077, 1, 2, -65540, 1, 2, -3, 1, 2, 65534, 1, 2, 65535, 1, 2, 0, 1, 2, 196601, 1, 1, 262138, 1, 1)
+layer_2/name = "Objects"
+layer_2/y_sort_enabled = true
+layer_2/tile_data = PackedInt32Array()
+script = ExtResource("5_52aqs")
+floor_layer_name = "Floors"
+objects_layer_name = "Objects"
+
+[node name="Parasite" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("7_p5xpa")]
+map = NodePath("..")
+
+[node name="LevelExit" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("8_hh4fk")]
+position = Vector2(-64, -33)
+map = NodePath("..")
+
+[node name="FollowCamera2D" type="Camera2D" parent="." groups=["MasterCamera"]]
+zoom = Vector2(3, 3)
+position_smoothing_enabled = true
+script = ExtResource("7_lw3ol")
+target_group = &"Player"
+
+[node name="FOV" type="CanvasLayer" parent="."]
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="FOV"]
+material = SubResource("ShaderMaterial_g4kv1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="FOV/SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="FollowCamera2D" type="Camera2D" parent="FOV/SubViewportContainer/SubViewport"]
+zoom = Vector2(3, 3)
+position_smoothing_enabled = true
+script = ExtResource("7_lw3ol")
+target_group = &"MasterCamera"
+
+[node name="FOWTileMap" type="TileMap" parent="FOV/SubViewportContainer/SubViewport" node_paths=PackedStringArray("parent_map")]
+y_sort_enabled = true
+tile_set = ExtResource("4_xrrv8")
+format = 2
+layer_0/name = "Floors"
+layer_0/y_sort_enabled = true
+layer_1/name = "Walls"
+layer_1/y_sort_enabled = true
+layer_1/tile_data = PackedInt32Array()
+script = ExtResource("10_ojmx5")
+parent_map = NodePath("../../../../AStarTileMap")
+
+[node name="HUD" parent="." instance=ExtResource("11_u2h4j")]

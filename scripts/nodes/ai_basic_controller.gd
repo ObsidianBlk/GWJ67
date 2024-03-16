@@ -99,9 +99,9 @@ func _FindEnemy() -> Actor:
 	var actors : Array[Actor] = actor.get_visible_actors()
 	for a : Actor in actors:
 		if a == actor: continue
-		if a is Parasite:
+		if a is Parasite and a.is_alive():
 			return a
-		elif a is Human and a.is_in_group(Settings.ACTOR_GROUP_PLAYER):
+		elif a is Human and a.is_in_group(Settings.ACTOR_GROUP_PLAYER) and a.is_alive():
 			return a
 	return null
 

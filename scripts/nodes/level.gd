@@ -38,6 +38,7 @@ const REQUEST_GAME_FAILURE : StringName = &"game_failure"
 # ------------------------------------------------------------------------------
 func _ready() -> void:
 	_ConnectLevelExits()
+	_ConnectPlayerController()
 
 #func _enter_tree() -> void:
 	#_ConnectLevelExits()
@@ -54,6 +55,12 @@ func _ConnectLevelExits() -> void:
 			if not actor.final_exit_requested.is_connected(_on_final_level_requested):
 				actor.final_exit_requested.connect(_on_final_level_requested)
 
+func _ConnectPlayerController() -> void:
+	var ctrls : Array[Node] = get_tree().get_nodes_in_group(Scheduler.CONTROL_GROUP_PLAYER)
+	for ctrl : Node in ctrls:
+		if ctrl is PlayerController:
+			if not ctrl.dead.is_connected(_on_player_dead):
+				ctrl.dead.connect(_on_player_dead)
 
 func _Request(action : StringName, payload : Dictionary = {}) -> void:
 	requested.emit(action, payload)
@@ -72,3 +79,5 @@ func _on_level_exit_requested(level_src : String) -> void:
 func _on_final_level_requested() -> void:
 	_Request.call_deferred(REQUEST_GAME_SUCCESS)
 
+func _on_player_dead() -> void:
+	_Request.call_deferred(REQUEST_GAME_FAILURE)

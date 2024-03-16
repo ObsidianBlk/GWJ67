@@ -4,7 +4,7 @@ class_name Parasite
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
-
+signal dead()
 
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
@@ -53,11 +53,8 @@ func _enter_tree() -> void:
 	_MoveEnded.call_deferred()
 
 func _process(delta: float) -> void:
-	if not _tweening:
-		if _alive:
-			_PlayIdle()
-		elif not _asprite_2d.animation == ANIM_DEAD:
-			_asprite_2d.play(ANIM_DEAD)
+	if not _tweening and _alive:
+		_PlayIdle()
 
 # ------------------------------------------------------------------------------
 # Private Methods
@@ -95,10 +92,16 @@ func attack(_amount : int = 1) -> int:
 
 func kill() -> void:
 	_alive = false
+	_asprite_2d.play(ANIM_DEAD)
 	#queue_free()
 
 func is_alive() -> bool:
 	return _alive
+
+func is_dead(fully : bool = false) -> bool:
+	if not _alive and fully:
+		return not _asprite_2d.is_playing() and _asprite_2d.animation == ANIM_DEAD
+	return not _alive
 
 # ------------------------------------------------------------------------------
 # Handler Methods
@@ -114,3 +117,6 @@ func _on_move_started(dir : int) -> void:
 		Actor.DIRECTION.West:
 			_asprite_2d.play(ANIM_WEST)
 
+func _on_a_sprite_2d_animation_finished() -> void:
+	if _asprite_2d.animation == ANIM_DEAD:
+		dead.emit()

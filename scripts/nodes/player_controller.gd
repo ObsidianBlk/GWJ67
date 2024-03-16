@@ -4,6 +4,7 @@ class_name PlayerController
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
+signal dead()
 
 # ------------------------------------------------------------------------------
 # Constants and ENUMs
@@ -77,6 +78,10 @@ func _DisconnectActor() -> void:
 	if actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.disconnect(_on_actor_move_ended)
 	
+	if actor is Parasite or actor is Human:
+		if actor.dead.is_connected(_on_actor_dead):
+			actor.dead.disconnect(_on_actor_dead)
+	
 	if is_processing_unhandled_input():
 		set_process_unhandled_input(false)
 		_EndAction.call_deferred()
@@ -88,6 +93,10 @@ func _ConnectActor() -> void:
 	
 	if not actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.connect(_on_actor_move_ended)
+	
+	if actor is Parasite or actor is Human:
+		if not actor.dead.is_connected(_on_actor_dead):
+			actor.dead.connect(_on_actor_dead)
 	
 	if not actor.is_in_group(Settings.ACTOR_GROUP_PLAYER):
 		actor.add_to_group(Settings.ACTOR_GROUP_PLAYER)
@@ -142,6 +151,9 @@ func action() -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
+func _on_actor_dead() -> void:
+	dead.emit()
+
 func _on_actor_move_ended() -> void:
 	set_process_unhandled_input(false)
 	_EndAction.call_deferred()

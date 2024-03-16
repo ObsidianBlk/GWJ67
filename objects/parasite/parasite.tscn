@@ -506,6 +506,8 @@ script = ExtResource("1_f6c4c")
 [node name="ASprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 3
 sprite_frames = SubResource("SpriteFrames_cffam")
-animation = &"idle"
+animation = &"west"
 autoplay = "idle"
 offset = Vector2(0, -12)
+
+[connection signal="animation_finished" from="ASprite2D" to="." method="_on_a_sprite_2d_animation_finished"]
