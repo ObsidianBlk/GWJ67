@@ -1,8 +1,9 @@
-[gd_scene load_steps=54 format=3 uid="uid://kom5168dm0gg"]
+[gd_scene load_steps=56 format=3 uid="uid://kom5168dm0gg"]
 
 [ext_resource type="Script" path="res://objects/human/human.gd" id="1_cs14g"]
 [ext_resource type="Texture2D" uid="uid://cos3kxtmta7g6" path="res://assets/graphics/character/es_idle.png" id="2_h7fy5"]
 [ext_resource type="Texture2D" uid="uid://0nnu131h2t73" path="res://assets/graphics/character/es_attack.png" id="2_rd5g0"]
+[ext_resource type="Texture2D" uid="uid://yaso2j3bd21a" path="res://assets/graphics/character/dead.png" id="2_y8awc"]
 [ext_resource type="Texture2D" uid="uid://bqlsum8r5livv" path="res://assets/graphics/character/es_breath.png" id="3_g4ul4"]
 [ext_resource type="Texture2D" uid="uid://mk7bgrmnr11n" path="res://assets/graphics/character/nw_idle.png" id="3_imki0"]
 [ext_resource type="PackedScene" uid="uid://dl0wxjdj57435" path="res://objects/selection_arrow/selection_arrow.tscn" id="4_sgvju"]
@@ -10,6 +11,10 @@
 [ext_resource type="Texture2D" uid="uid://b8rmuo4nnq7j" path="res://assets/graphics/character/nw_attack.png" id="6_so1yl"]
 [ext_resource type="Texture2D" uid="uid://ck5bvfkk8yq3p" path="res://assets/graphics/character/nw_breath.png" id="7_usodd"]
 [ext_resource type="Texture2D" uid="uid://cl0cgurt67dy7" path="res://assets/graphics/character/nw_walk.png" id="9_0mbuy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5lenu"]
+atlas = ExtResource("2_y8awc")
+region = Rect2(0, 0, 32, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3r2cj"]
 atlas = ExtResource("2_rd5g0")
@@ -181,6 +186,14 @@ region = Rect2(192, 0, 32, 48)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_cenif"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5lenu")
+}],
+"loop": false,
+"name": &"dead",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3r2cj")
@@ -358,9 +371,7 @@ sight_right = 0
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 3
 sprite_frames = SubResource("SpriteFrames_cenif")
-animation = &"nw_walk"
-frame = 5
-frame_progress = 0.810876
+animation = &"dead"
 offset = Vector2(0, -12)
 
 [node name="SelectionArrow" parent="." instance=ExtResource("4_sgvju")]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dfh7dgeltfpds"]
+[gd_scene load_steps=20 format=3 uid="uid://dfh7dgeltfpds"]
 
 [ext_resource type="Script" path="res://scripts/nodes/level.gd" id="1_xx4mv"]
 [ext_resource type="Script" path="res://scripts/nodes/scheduler.gd" id="2_liak2"]
@@ -10,9 +10,14 @@
 [ext_resource type="PackedScene" uid="uid://xk07rgerivmc" path="res://objects/parasite/parasite.tscn" id="7_p5xpa"]
 [ext_resource type="PackedScene" uid="uid://wp5wy4d0mcjv" path="res://objects/level_exit/level_exit.tscn" id="8_hh4fk"]
 [ext_resource type="Shader" path="res://shaders/fog_of_war.gdshader" id="8_vgwcy"]
+[ext_resource type="PackedScene" uid="uid://dj5saefe3ntny" path="res://objects/door/door.tscn" id="9_0gxct"]
 [ext_resource type="Texture2D" uid="uid://dkycrhtksk41s" path="res://assets/noise_fow_edging.tres" id="9_odhbu"]
 [ext_resource type="Script" path="res://scripts/nodes/FOWTileMap.gd" id="10_ojmx5"]
+[ext_resource type="PackedScene" uid="uid://dsexuvv103hx4" path="res://objects/switch/switch.tscn" id="10_p8hkk"]
+[ext_resource type="PackedScene" uid="uid://kom5168dm0gg" path="res://objects/human/human.tscn" id="11_qggov"]
 [ext_resource type="PackedScene" uid="uid://bupf7fw2053q" path="res://ui/hud/hud.tscn" id="11_u2h4j"]
+[ext_resource type="Script" path="res://scripts/nodes/ai_basic_controller.gd" id="12_rr27d"]
+[ext_resource type="Script" path="res://scripts/nodes/PatrolPoint.gd" id="14_j33xd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g4kv1"]
 shader = ExtResource("8_vgwcy")
@@ -44,13 +49,13 @@ tile_set = ExtResource("4_xrrv8")
 format = 2
 layer_0/name = "Floors"
 layer_0/y_sort_enabled = true
-layer_0/tile_data = PackedInt32Array(65534, 196608, 2, 65535, 196608, 2, 0, 196608, 2, -3, 458752, 3, -65540, 458752, 3, -131077, 458752, 3, 131069, 524288, 3, 196604, 524288, 3, 262139, 524288, 3, -131078, 393216, 3, -65543, 393216, 3, -8, 393216, 3, 262138, 327680, 3, 196601, 327680, 3, 131064, 327680, 3, 65528, 65536, 3, -65542, 65536, 0, -6, 65536, 0, 65530, 65536, 0, 131066, 65536, 0, 196602, 65536, 0, -7, 65536, 0, 65529, 65536, 0, 131065, 65536, 0, -65541, 65536, 0, -5, 65536, 0, 65531, 131072, 0, 131067, 65536, 0, 196603, 65536, 0, -4, 65536, 0, 65532, 65536, 0, 131068, 65536, 0, 65533, 65536, 0)
+layer_0/tile_data = PackedInt32Array(65534, 196608, 2, 65535, 196608, 2, 0, 196608, 2, -3, 65536, 0, -65540, 65536, 0, -131077, 65536, 0, 131069, 65536, 0, 196604, 65536, 0, 262139, 65536, 0, -131078, 65536, 0, -65543, 65536, 0, -8, 65536, 0, 262138, 65536, 0, 196601, 65536, 0, 131064, 65536, 0, 65528, 65536, 0, -65542, 65536, 0, -6, 65536, 0, 65530, 65536, 0, 131066, 65536, 0, 196602, 65536, 0, -7, 65536, 0, 65529, 65536, 0, 131065, 65536, 0, -65541, 65536, 0, -5, 65536, 0, 65531, 65536, 0, 131067, 65536, 0, 196603, 65536, 0, -4, 65536, 0, 65532, 65536, 0, 131068, 65536, 0, 65533, 65536, 0, 196600, 65536, 0, 262136, 65536, 0, 262137, 65536, 0, 262140, 65536, 0, 196605, 65536, 0, 262141, 65536, 0, -131080, 65536, 0, -65544, 65536, 0, -131079, 65536, 0, -131076, 65536, 0, -131075, 65536, 0, -65539, 65536, 0, -131085, 65536, 0, -65549, 65536, 0, -13, 65536, 0, 65523, 65536, 0, 131059, 65536, 0, 196595, 65536, 0, 262131, 65536, 0, -131084, 65536, 0, -65548, 65536, 0, -12, 65536, 0, 65524, 65536, 0, 131060, 65536, 0, 196596, 65536, 0, 262132, 65536, 0, -131083, 65536, 0, -65547, 65536, 0, -11, 65536, 0, 65525, 65536, 0, 131061, 65536, 0, 196597, 65536, 0, 262133, 65536, 0, -131082, 65536, 0, -65546, 65536, 0, -10, 65536, 0, 65526, 65536, 0, 131062, 65536, 0, 196598, 65536, 0, 262134, 65536, 0, -131081, 65536, 0, -65545, 65536, 0, -9, 65536, 0, 65527, 65536, 0, 131063, 65536, 0, 196599, 65536, 0, 262135, 65536, 0, 65520, 196608, 2, 65521, 196608, 2, 65522, 196608, 2)
 layer_1/name = "Walls"
 layer_1/y_sort_enabled = true
-layer_1/tile_data = PackedInt32Array(-131078, 131073, 0, -65543, 131073, 0, -8, 131073, 0, 65528, 1, 1, 131064, 1, 1, -131077, 1, 2, -65540, 1, 2, -3, 1, 2, 65534, 1, 2, 65535, 1, 2, 0, 1, 2, 196601, 1, 1, 262138, 1, 1)
+layer_1/tile_data = PackedInt32Array(-131084, 65537, 2)
 layer_2/name = "Objects"
 layer_2/y_sort_enabled = true
-layer_2/tile_data = PackedInt32Array()
+layer_2/tile_data = PackedInt32Array(131067, 65538, 0, 131065, 65538, 0, 131063, 65538, 0, 131061, 65538, 0, 131059, 65538, 0, -13, 65538, 0, -11, 65538, 0, -9, 65538, 0, -7, 65538, 0, -5, 65538, 0)
 script = ExtResource("5_52aqs")
 floor_layer_name = "Floors"
 objects_layer_name = "Objects"
@@ -59,14 +64,76 @@ objects_layer_name = "Objects"
 map = NodePath("..")
 
 [node name="LevelExit" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("8_hh4fk")]
-position = Vector2(-64, -33)
+position = Vector2(-240, -120)
 map = NodePath("..")
+
+[node name="Door" parent="AStarTileMap" node_paths=PackedStringArray("switch", "map") instance=ExtResource("9_0gxct")]
+position = Vector2(-208, -104)
+facing = 1
+switch = NodePath("../Switch")
+map = NodePath("..")
+
+[node name="Switch" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("10_p8hkk")]
+position = Vector2(-128, -113)
+map = NodePath("..")
+
+[node name="Human" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("11_qggov")]
+position = Vector2(-128, -32)
+map = NodePath("..")
+initial_facing = 1
+
+[node name="AI_Human1" type="Node" parent="AStarTileMap/Human" node_paths=PackedStringArray("actor")]
+script = ExtResource("12_rr27d")
+patrol_group = &"PatrolLeft"
+actor = NodePath("..")
+action_points = 1
+
+[node name="Human2" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("11_qggov")]
+position = Vector2(-97, -81)
+map = NodePath("..")
+initial_facing = 3
+
+[node name="AI_Human2" type="Node" parent="AStarTileMap/Human2" node_paths=PackedStringArray("actor")]
+script = ExtResource("12_rr27d")
+patrol_group = &"PatrolRight"
+actor = NodePath("..")
+action_points = 1
 
 [node name="FollowCamera2D" type="Camera2D" parent="." groups=["MasterCamera"]]
 zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 script = ExtResource("7_lw3ol")
 target_group = &"Player"
+
+[node name="PatrolLeft" type="Node2D" parent="."]
+
+[node name="PatrolPoint" type="Node2D" parent="PatrolLeft" node_paths=PackedStringArray("next_point")]
+position = Vector2(-80, -9)
+script = ExtResource("14_j33xd")
+group_name = &"PatrolLeft"
+next_point = NodePath("../PatrolPoint2")
+
+[node name="PatrolPoint2" type="Node2D" parent="PatrolLeft" node_paths=PackedStringArray("next_point")]
+position = Vector2(-208, -73)
+script = ExtResource("14_j33xd")
+group_name = &"PatrolLeft"
+next_point = NodePath("../PatrolPoint")
+
+[node name="PatrolRight" type="Node2D" parent="."]
+
+[node name="PatrolPoint" type="Node2D" parent="PatrolRight" node_paths=PackedStringArray("next_point")]
+position = Vector2(-16, -41)
+script = ExtResource("14_j33xd")
+group_name = &"PatrolRight"
+color = Color(1, 0.882353, 0.262745, 1)
+next_point = NodePath("../PatrolPoint2")
+
+[node name="PatrolPoint2" type="Node2D" parent="PatrolRight" node_paths=PackedStringArray("next_point")]
+position = Vector2(-144, -105)
+script = ExtResource("14_j33xd")
+group_name = &"PatrolRight"
+color = Color(1, 0.882353, 0.262745, 1)
+next_point = NodePath("../PatrolPoint")
 
 [node name="FOV" type="CanvasLayer" parent="."]
 
