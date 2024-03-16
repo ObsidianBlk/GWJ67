@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://x1v0jsxgb8b0"]
+[gd_scene load_steps=8 format=3 uid="uid://x1v0jsxgb8b0"]
 
 [ext_resource type="Script" path="res://scenes/world/world.gd" id="1_ckcy3"]
 [ext_resource type="Script" path="res://scripts/ui/ui_layer.gd" id="1_ydui3"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c3p0rqkha82y4" path="res://ui/dialog_confirm/dialog_confirm.tscn" id="4_c6cj4"]
 [ext_resource type="PackedScene" uid="uid://bofbqfeoar6el" path="res://ui/options_menu/options_menu.tscn" id="4_jcpr6"]
 [ext_resource type="PackedScene" uid="uid://y0gx7ugbw0r4" path="res://ui/dialog_notify/dialog_notify.tscn" id="6_escrv"]
+[ext_resource type="PackedScene" uid="uid://sgs00cssdkdd" path="res://ui/pause_menu/pause_menu.tscn" id="7_a7nfx"]
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("ui")]
 process_mode = 3
@@ -27,3 +28,6 @@ hide_at_start = false
 [node name="DialogConfirm" parent="UILayer" instance=ExtResource("4_c6cj4")]
 
 [node name="DialogNotify" parent="UILayer" instance=ExtResource("6_escrv")]
+
+[node name="PauseMenu" parent="UILayer" instance=ExtResource("7_a7nfx")]
+options_menu_name = &"OptionsMenu"

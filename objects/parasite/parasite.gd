@@ -76,14 +76,17 @@ func _PlayIdle() -> void:
 	else:
 		_asprite_2d.play(ANIM_IDLE_1)
 
+func _UpdateFOW() -> void:
+	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
+	if fow == null: return
+	fow.set_region(Settings.FOW_REGION_NAME, compute_sight(), 1)
+
 # ------------------------------------------------------------------------------
 # "Virtual" Private Methods
 # ------------------------------------------------------------------------------
 func _MoveEnded() -> void:
 	_selection_arrow.visible = false
-	var fow : FOWTileMap = FOWTileMap.Get().get_ref()
-	if fow == null: return
-	fow.set_region(Settings.FOW_REGION_NAME, compute_sight(), 1)
+	_UpdateFOW()
 
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -113,6 +116,10 @@ func is_dead(fully : bool = false) -> bool:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
+func _on_map_astar_changed() -> void:
+	super._on_map_astar_changed()
+	_UpdateFOW()
+
 func _on_move_started(dir : int) -> void:
 	match dir:
 		Actor.DIRECTION.North:

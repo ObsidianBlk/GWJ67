@@ -158,7 +158,10 @@ static func Add_Actor(a : Actor, position : Vector2 = Vector2.ZERO, direction : 
 
 # ------------------------------------------------------------------------------
 # Public Methods
-# ------------------------------------------------------------------------------ 
+# ------------------------------------------------------------------------------
+func update_astar() -> void:
+	_BuildAStarGrid()
+
 func get_layer_index_from_name(layer_name : String) -> int:
 	for i in range(get_layers_count()):
 		if get_layer_name(i) == layer_name:
@@ -197,6 +200,14 @@ func get_actor_in_cell(cell : Vector2i) -> Actor:
 	if cell in _occupied_cells:
 		return _occupied_cells[cell]
 	return null
+
+func get_nb_actors_in_cell(cell : Vector2i) -> Array[Actor]:
+	var actors : Array[Actor] = []
+	for child in get_children():
+		if child is Actor and child.blocking == false:
+			if child.get_map_position() == cell:
+				actors.append(child)
+	return actors
 
 func highlight_region(region_name : StringName, region : Array[Vector2i], alternate : int) -> void:
 	_RemoveRegion(region_name)

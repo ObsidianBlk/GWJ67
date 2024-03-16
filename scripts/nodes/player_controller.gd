@@ -122,16 +122,27 @@ func _HandleAction(direction : Actor.DIRECTION) -> void:
 		elif target is LevelExit:
 			target.use()
 			_EndAction.call_deferred()
-	elif actor is Human and _mode == Mode.EXIT:
-		var parasite : Actor = PARASITE_SCENE.instantiate()
-		parasite.map = AStarTileMap.Get().get_ref()
-		if AStarTileMap.Add_Actor(parasite, actor.global_position, direction):
-			_AttackHuman(actor, ATTACK_EXIT_AMOUNT)
-			actor = parasite
-			_EndAction.call_deferred()
-			return
+	elif actor is Human:
+		match _mode:
+			Mode.EXIT:
+				var parasite : Actor = PARASITE_SCENE.instantiate()
+				parasite.map = AStarTileMap.Get().get_ref()
+				if AStarTileMap.Add_Actor(parasite, actor.global_position, direction):
+					_AttackHuman(actor, ATTACK_EXIT_AMOUNT)
+					actor = parasite
+					_EndAction.call_deferred()
+					return
+			Mode.MOVE:
+				if not actor.can_move(direction):
+					var actors : Array[Actor] = actor.get_nb_actors()
+					for sub_actor : Actor in actors:
+						if sub_actor is Switch:
+							sub_actor.use()
+							_EndAction.call_deferred()
+							return
 
-	actor.move(direction)
+	if actor.can_move(direction):
+		actor.move(direction)
 
 func _IsAlive() -> bool:
 	if actor == null or not actor.has_method("is_alive"): return false

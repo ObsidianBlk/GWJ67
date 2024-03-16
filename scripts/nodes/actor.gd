@@ -256,6 +256,11 @@ func turn(dir : int) -> void:
 	_TurnEnded()
 	facing_changed.emit()
 
+func can_move(d : DIRECTION) -> bool:
+	if map != null:
+		var mappos : Vector2i = map.local_to_map(global_position) + _DirectionToVector(d)
+		return not map.is_point_solid(mappos)
+	return false
 
 func move(d : DIRECTION) -> void:
 	if map == null: return
@@ -341,6 +346,11 @@ func get_adjacent_actor(dir : DIRECTION) -> Actor:
 			return map.get_actor_in_cell(mpos + Vector2i.LEFT)
 	
 	return null
+
+func get_nb_actors() -> Array[Actor]:
+	if map == null: return []
+	var mpos : Vector2i = map.local_to_map(global_position)
+	return map.get_nb_actors_in_cell(mpos)
 
 func get_map_position() -> Vector2i:
 	if map == null: return Vector2i.ZERO

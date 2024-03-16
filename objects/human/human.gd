@@ -4,6 +4,7 @@ class_name Human
 # ------------------------------------------------------------------------------
 # Signals
 # ------------------------------------------------------------------------------
+signal attack_animation_complete()
 signal dead()
 
 # ------------------------------------------------------------------------------
@@ -11,7 +12,14 @@ signal dead()
 # ------------------------------------------------------------------------------
 const HIGHLIGHT_ALTERNATE_TILE_INDEX : int = 3
 
-const ANIM_IDLE : StringName = &"idle"
+const NW_PREFIX : String = "nw_"
+const ES_PREFIX : String = "es_"
+
+const ANIM_IDLE : String = "idle"
+const ANIM_BREATH : String = "breath"
+const ANIM_WALK : String = "walk"
+const ANIM_ATTACK : String = "attack"
+
 const ANIM_DEAD : StringName = &"dead"
 
 # ------------------------------------------------------------------------------
@@ -47,6 +55,21 @@ func _ready() -> void:
 # ------------------------------------------------------------------------------
 # Private Methods
 # ------------------------------------------------------------------------------
+func _GetFacingPrefix() -> String:
+	match _facing:
+		Actor.DIRECTION.North, Actor.DIRECTION.West:
+			return NW_PREFIX
+		Actor.DIRECTION.South, Actor.DIRECTION.East:
+			return ES_PREFIX
+	return ""
+
+func _UpdateFlipState() -> void:
+	match _facing:
+		Actor.DIRECTION.North, Actor.DIRECTION.East:
+			_asprite_2d.flip_h = false
+		Actor.DIRECTION.South, Actor.DIRECTION.West:
+			_asprite_2d.flip_h = true
+
 func _UpdateVisionArea() -> void:
 	if map == null: return
 	var sight : Array[Vector2i] = []
@@ -65,17 +88,32 @@ func _UpdateAnimation() -> void:
 	if life <= death_threshold:
 		_asprite_2d.play(ANIM_DEAD)
 	else:
-		_asprite_2d.play(ANIM_IDLE)
+		var anim : String = "%s%s"%[_GetFacingPrefix(), ANIM_IDLE]
+		var probability : float = randf() * 1000.0
+		if probability < 100:
+			anim = "%s%s"%[_GetFacingPrefix(), ANIM_BREATH]
+		_asprite_2d.play(anim)
+		_UpdateFlipState()
+
+func _PlayMoving() -> void:
+	_asprite_2d.play("%s%s"%[_GetFacingPrefix(), ANIM_WALK])
+	_UpdateFlipState()
+
+func _PlayAttack() -> void:
+	_asprite_2d.play("%s%s"%[_GetFacingPrefix(), ANIM_ATTACK])
+	_UpdateFlipState()
 
 # ------------------------------------------------------------------------------
 # "Virtual" Private Methods
 # ------------------------------------------------------------------------------
 func _MoveEnded() -> void:
 	_selection_arrow.visible = false
+	_UpdateAnimation()
 	_UpdateVisionArea()
 
 func _TurnEnded() -> void:
 	_selection_arrow.visible = false
+	_UpdateAnimation()
 	_UpdateVisionArea()
 
 # ------------------------------------------------------------------------------
@@ -94,6 +132,7 @@ func move(dir : Actor.DIRECTION) -> void:
 			turns = -1 if randf() < 0.5 else 1
 		turn(turns)
 		return
+	_PlayMoving()
 	super.move(dir)
 
 func is_alive() -> bool:
@@ -116,8 +155,16 @@ func kill() -> void:
 	_UpdateAnimation()
 	_UpdateVisionArea()
 
+func play_attack_animation() -> void:
+	_PlayAttack()
+
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
+func _on_map_astar_changed() -> void:
+	super._on_map_astar_changed()
+	_UpdateVisionArea()
 
-
+func _on_animated_sprite_2d_animation_finished() -> void:
+	if _asprite_2d.animation.ends_with(ANIM_ATTACK):
+		attack_animation_complete.emit()

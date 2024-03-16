@@ -1,0 +1,23 @@
+[gd_resource type="SpriteFrames" load_steps=3 format=3 uid="uid://dmf3hqftlavwx"]
+
+[ext_resource type="Texture2D" uid="uid://dfynj4t26rhkm" path="res://assets/graphics/character/BeanDead.png" id="1_m5hfp"]
+[ext_resource type="Texture2D" uid="uid://bbap20kr44a15" path="res://assets/graphics/character/Bean.png" id="2_8rp2s"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_m5hfp")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_8rp2s")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

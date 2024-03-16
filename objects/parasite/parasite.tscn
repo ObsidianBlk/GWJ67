@@ -503,6 +503,10 @@ animations = [{
 
 [node name="Parasite" type="Node2D"]
 script = ExtResource("1_f6c4c")
+sight_foreward = 4
+sight_backward = 4
+sight_left = 4
+sight_right = 4
 
 [node name="ASprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 3

@@ -9,6 +9,7 @@ extends Node2D
 # Constants and ENUMs
 # ------------------------------------------------------------------------------
 const MAIN_MENU : StringName = &"MainMenu"
+const PAUSE_MENU : StringName = &"PauseMenu"
 
 const INITIAL_LEVEL : String = "res://scenes/level_001/level_001.tscn"
 
@@ -21,6 +22,7 @@ const INITIAL_LEVEL : String = "res://scenes/level_001/level_001.tscn"
 # ------------------------------------------------------------------------------
 # Variables
 # ------------------------------------------------------------------------------
+var _active_level_src : String = ""
 var _active_level : Node2D = null
 
 # ------------------------------------------------------------------------------
@@ -48,7 +50,15 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		_Quit()
+		if _active_level != null:
+			if get_tree().paused:
+				get_tree().paused = false
+				ui.close_all()
+			else:
+				get_tree().paused = true
+				ui.show_ui(PAUSE_MENU)
+		else:
+			_Quit()
 
 # ------------------------------------------------------------------------------
 # Private Methods
@@ -77,6 +87,7 @@ func _UnloadActiveLevel() -> void:
 	remove_child(_active_level)
 	_active_level.queue_free()
 	_active_level = null
+	_active_level_src = ""
 
 func _LoadLevel(level_src : String) -> int:
 	# Load level's PackedScene
@@ -96,6 +107,7 @@ func _LoadLevel(level_src : String) -> int:
 	
 	# Add the new level node to the scene. We should be off to the races now!
 	_active_level = level_node
+	_active_level_src = level_src
 	_active_level.process_mode = Node.PROCESS_MODE_PAUSABLE
 	if not _active_level.requested.is_connected(_on_requested):
 		_active_level.requested.connect(_on_requested)
@@ -103,6 +115,11 @@ func _LoadLevel(level_src : String) -> int:
 	add_child(_active_level)
 	
 	return OK
+
+func _ReloadLevel() -> int:
+	if _active_level_src.is_empty():
+		return ERR_UNCONFIGURED
+	return _LoadLevel(_active_level_src)
 
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -116,6 +133,8 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 	if ui == null:
 		return
 	match action:
+		UILayer.REQUEST_TOGGLE_PAUSE:
+			get_tree().paused = not get_tree().paused
 		UILayer.REQUEST_START_GAME:
 			if _active_level != null: return # Don't start a new game if we're running one.
 			if _LoadLevel(INITIAL_LEVEL) != OK:
@@ -126,6 +145,7 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 				)
 			else:
 				ui.close_all()
+				PlayerData.reset()
 		UILayer.REQUEST_QUIT_APPLICATION:
 			_Quit()
 		UILayer.REQUEST_QUIT_TO_MAIN:
@@ -135,6 +155,24 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 		Level.REQUEST_NEXT_LEVEL:
 			if Util.Is_Dict_Property_Type(payload, "level_src", TYPE_STRING):
 				if _LoadLevel(payload["level_src"]) != OK:
+					ui.open_notify_dialog(
+						"Level Load Failure",
+						"Failed to load the next level.\nNot much to be done now.\nExit to Main Menu and abandon all hope of finishing this game.",
+						UILayer.REQUEST_CLOSE_UI
+					)
+				else:
+					PlayerData.start_of_level()
+		Level.REQUEST_RESTART_LEVEL:
+			var res : int = _ReloadLevel()
+			match res:
+				OK:
+					ui.close_all()
+					if get_tree().paused:
+						get_tree().paused = false
+					PlayerData.reset_snapshot()
+				ERR_UNCONFIGURED:
+					printerr("Somewhere there is an attempt to reload an unloaded level... ?")
+				_:
 					ui.open_notify_dialog(
 						"Level Load Failure",
 						"Failed to load the next level.\nNot much to be done now.\nExit to Main Menu and abandon all hope of finishing this game.",

@@ -61,7 +61,6 @@ func _SetStateFromWall() -> void:
 			_state = SWITCH_ON
 	if old_state != _state:
 		state_changed.emit(_state)
-	print("Switch State Set To: ", _state)
 
 func _UpdateSwitchState(cell : Vector2i, wall_state : int) -> void:
 	if map == null or wall_state == 0: return
@@ -77,7 +76,6 @@ func _UpdateSwitchState(cell : Vector2i, wall_state : int) -> void:
 			_state = SWITCH_OFF
 	map.set_cell(LAYER_WALLS, cell, sid, atlas, alternate)
 	state_changed.emit(_state)
-	print("SWITCHED TO: ", _state)
 	
 # ------------------------------------------------------------------------------
 # Public Methods
@@ -93,6 +91,9 @@ func use() -> void:
 
 func is_on() -> bool:
 	return _state == SWITCH_ON
+
+func get_state() -> int:
+	return _state
 
 # ------------------------------------------------------------------------------
 # Handler Methods

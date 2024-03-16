@@ -125,6 +125,13 @@ func action() -> void:
 	
 	actor.show_selection()
 	
+	var enemy : Actor = _FindEnemy()
+	if enemy != null:
+		if enemy.has_method(&"attack"):
+			actor.attack_animation_complete.connect(_on_attack_animation_complete.bind(enemy))
+			actor.play_attack_animation()
+			return
+	
 	if not actor.has_path() and _target_point != null:
 		actor.set_path_to(_target_point.global_position)
 	
@@ -141,6 +148,15 @@ func action() -> void:
 # ------------------------------------------------------------------------------
 # Handler Methods
 # ------------------------------------------------------------------------------
+func _on_attack_animation_complete(enemy : Actor) -> void:
+	if actor == null: return
+	if actor.attack_animation_complete.is_connected(_on_attack_animation_complete.bind(enemy)):
+		actor.attack_animation_complete.disconnect(_on_attack_animation_complete.bind(enemy))
+	
+	if enemy == null: return
+	enemy.attack()
+	_EndAction.call_deferred()
+
 func _on_move_started(dir : int) -> void:
 	pass
 	#if [Actor.DIRECTION.North, Actor.DIRECTION.South, Actor.DIRECTION.East, Actor.DIRECTION.West].find(dir) >= 0:
@@ -148,15 +164,7 @@ func _on_move_started(dir : int) -> void:
 
 func _on_actor_move_ended() -> void:
 	if actor != null:
-		var next : bool = true
-		
-		var enemy : Actor = _FindEnemy()
-		if enemy != null:
-			if enemy.has_method(&"attack"):
-				enemy.attack()
-				next = false
-				
-		if next and actor.has_path():
+		if actor.has_path():
 			actor.next_path_point()
 	
 	_EndAction.call_deferred()
