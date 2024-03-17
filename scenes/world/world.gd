@@ -11,6 +11,10 @@ extends Node2D
 const MAIN_MENU : StringName = &"MainMenu"
 const PAUSE_MENU : StringName = &"PauseMenu"
 
+const TRANSITION_HIDDEN_COLOR : Color = Color.BLACK
+const TRANSITION_VISIBLE_COLOR : Color = Color(0,0,0,0)
+const TRANSITION_DURATION : float = 0.5
+
 const INITIAL_LEVEL : String = "res://scenes/level_001/level_001.tscn"
 
 # ------------------------------------------------------------------------------
@@ -25,9 +29,12 @@ const INITIAL_LEVEL : String = "res://scenes/level_001/level_001.tscn"
 var _active_level_src : String = ""
 var _active_level : Node2D = null
 
+var _transitioning : bool = false
+
 # ------------------------------------------------------------------------------
 # Onready Variables
 # ------------------------------------------------------------------------------
+@onready var _color_rect: ColorRect = $TransitionLayer/ColorRect
 
 
 # ------------------------------------------------------------------------------
@@ -121,6 +128,12 @@ func _ReloadLevel() -> int:
 		return ERR_UNCONFIGURED
 	return _LoadLevel(_active_level_src)
 
+func _StartTransition(to : Color) -> void:
+	if _transitioning == true or _color_rect == null: return
+	var tween : Tween = create_tween()
+	tween.tween_property(_color_rect, "color", to, TRANSITION_DURATION)
+	await tween.finished
+
 # ------------------------------------------------------------------------------
 # Public Methods
 # ------------------------------------------------------------------------------
@@ -137,6 +150,8 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 			get_tree().paused = not get_tree().paused
 		UILayer.REQUEST_START_GAME:
 			if _active_level != null: return # Don't start a new game if we're running one.
+			get_tree().paused = true
+			await _StartTransition(TRANSITION_HIDDEN_COLOR)
 			if _LoadLevel(INITIAL_LEVEL) != OK:
 				ui.open_notify_dialog(
 					"Level Load Failure",
@@ -146,14 +161,22 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 			else:
 				ui.close_all()
 				PlayerData.reset()
+				await _StartTransition(TRANSITION_VISIBLE_COLOR)
+				get_tree().paused = false
 		UILayer.REQUEST_QUIT_APPLICATION:
 			_Quit()
 		UILayer.REQUEST_QUIT_TO_MAIN:
+			get_tree().paused = true
+			await _StartTransition(TRANSITION_HIDDEN_COLOR)
 			_UnloadActiveLevel()
 			ui.close_all()
 			ui.show_ui(MAIN_MENU)
+			await _StartTransition(TRANSITION_VISIBLE_COLOR)
+			get_tree().paused = false
 		Level.REQUEST_NEXT_LEVEL:
 			if Util.Is_Dict_Property_Type(payload, "level_src", TYPE_STRING):
+				get_tree().paused = true
+				await _StartTransition(TRANSITION_HIDDEN_COLOR)
 				if _LoadLevel(payload["level_src"]) != OK:
 					ui.open_notify_dialog(
 						"Level Load Failure",
@@ -161,12 +184,17 @@ func _on_requested(action : StringName, payload : Dictionary) -> void:
 						UILayer.REQUEST_CLOSE_UI
 					)
 				else:
+					await _StartTransition(TRANSITION_VISIBLE_COLOR)
+					get_tree().paused = false
 					PlayerData.start_of_level()
 		Level.REQUEST_RESTART_LEVEL:
+			get_tree().paused = true
+			await _StartTransition(TRANSITION_HIDDEN_COLOR)
 			var res : int = _ReloadLevel()
 			match res:
 				OK:
 					ui.close_all()
+					await _StartTransition(TRANSITION_VISIBLE_COLOR)
 					if get_tree().paused:
 						get_tree().paused = false
 					PlayerData.reset_snapshot()

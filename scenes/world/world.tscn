@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://x1v0jsxgb8b0"]
+[gd_scene load_steps=9 format=3 uid="uid://x1v0jsxgb8b0"]
 
 [ext_resource type="Script" path="res://scenes/world/world.gd" id="1_ckcy3"]
 [ext_resource type="Script" path="res://scripts/ui/ui_layer.gd" id="1_ydui3"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bofbqfeoar6el" path="res://ui/options_menu/options_menu.tscn" id="4_jcpr6"]
 [ext_resource type="PackedScene" uid="uid://y0gx7ugbw0r4" path="res://ui/dialog_notify/dialog_notify.tscn" id="6_escrv"]
 [ext_resource type="PackedScene" uid="uid://sgs00cssdkdd" path="res://ui/pause_menu/pause_menu.tscn" id="7_a7nfx"]
+[ext_resource type="PackedScene" uid="uid://c4j0nqjv6wpcg" path="res://ui/backdrop_001/backdrop_001.tscn" id="8_6npou"]
 
 [node name="World" type="Node2D" node_paths=PackedStringArray("ui")]
 process_mode = 3
@@ -31,3 +32,25 @@ hide_at_start = false
 
 [node name="PauseMenu" parent="UILayer" instance=ExtResource("7_a7nfx")]
 options_menu_name = &"OptionsMenu"
+
+[node name="Backdrop" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = -10
+
+[node name="Backdrop_001" parent="Backdrop" instance=ExtResource("8_6npou")]
+shake_speed = 5.0
+shake_strength = 15.0
+decay_rate = 0.0
+
+[node name="TransitionLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+layer = 110
+
+[node name="ColorRect" type="ColorRect" parent="TransitionLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)

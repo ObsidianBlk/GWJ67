@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3 uid="uid://c4j0nqjv6wpcg"]
+
+[ext_resource type="Script" path="res://ui/backdrop_001/backdrop_001.gd" id="1_qpfqr"]
+[ext_resource type="Texture2D" uid="uid://b3frsc74g21mw" path="res://assets/graphics/backdrop/Parasite_scene_HD.png" id="2_s2hbt"]
+[ext_resource type="Texture2D" uid="uid://c0n41uts46xin" path="res://assets/graphics/backdrop/parasite_HD.png" id="3_um7nb"]
+[ext_resource type="Shader" path="res://shaders/crt.gdshader" id="4_3v6lh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_43c4b"]
+shader = ExtResource("4_3v6lh")
+
+[node name="Backdrop_001" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qpfqr")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_s2hbt")
+expand_mode = 5
+
+[node name="Parasite" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_um7nb")
+expand_mode = 5
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_43c4b")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
