@@ -72,12 +72,16 @@ func _UpdateFlipState() -> void:
 
 func _UpdateVisionArea() -> void:
 	if map == null: return
+	var is_player : bool = is_in_group(Settings.ACTOR_GROUP_PLAYER)
 	var sight : Array[Vector2i] = []
-	if is_alive():
-		sight = compute_sight()
-	map.highlight_region(self.name, sight, HIGHLIGHT_ALTERNATE_TILE_INDEX)
+	
+	if not is_player:
+		if is_alive():
+			sight = compute_sight(true)
+		map.highlight_region(self.name, sight, HIGHLIGHT_ALTERNATE_TILE_INDEX)
 
-	if is_in_group(Settings.ACTOR_GROUP_PLAYER):
+	if is_player:
+		map.highlight_region(self.name, [], HIGHLIGHT_ALTERNATE_TILE_INDEX)
 		if sight.size() <= 0:
 			sight = compute_sight()
 		var fow : FOWTileMap = FOWTileMap.Get().get_ref()

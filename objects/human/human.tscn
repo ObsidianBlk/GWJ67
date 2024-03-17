@@ -363,7 +363,12 @@ animations = [{
 
 [node name="Human" type="Node2D"]
 script = ExtResource("1_cs14g")
+life = null
+death_threshold = null
+initial_facing = null
 hidden_in_fow = false
+blocking = null
+sight_foreward = null
 sight_backward = 0
 sight_left = 0
 sight_right = 0

@@ -77,7 +77,7 @@ func _ConnectMap() -> void:
 	if not map.astar_changed.is_connected(_on_map_astar_changed):
 		map.astar_changed.connect(_on_map_astar_changed)
 
-func _GetSightFromCardinal(cardinal : ShadowQuadrent.Cardinal) -> int:
+func _GetSightFromCardinal(cardinal : ShadowQuadrent.Cardinal, only_facing : bool = false) -> int:
 	var ranges : Array[int] = [sight_foreward, sight_right, sight_backward, sight_left]
 	var foffset : int = _facing
 	
@@ -87,39 +87,39 @@ func _GetSightFromCardinal(cardinal : ShadowQuadrent.Cardinal) -> int:
 				DIRECTION.North:
 					return sight_foreward
 				DIRECTION.East:
-					return sight_left
+					return sight_left if not only_facing else 0
 				DIRECTION.South:
-					return sight_backward
+					return sight_backward if not only_facing else 0
 				DIRECTION.West:
-					return sight_right
+					return sight_right if not only_facing else 0
 		ShadowQuadrent.Cardinal.EAST:
 			match _facing:
 				DIRECTION.North:
-					return sight_right
+					return sight_right if not only_facing else 0
 				DIRECTION.East:
 					return sight_foreward
 				DIRECTION.South:
-					return sight_left
+					return sight_left if not only_facing else 0
 				DIRECTION.West:
-					return sight_backward
+					return sight_backward if not only_facing else 0
 		ShadowQuadrent.Cardinal.SOUTH:
 			match _facing:
 				DIRECTION.North:
-					return sight_backward
+					return sight_backward if not only_facing else 0
 				DIRECTION.East:
-					return sight_left
+					return sight_left if not only_facing else 0
 				DIRECTION.South:
 					return sight_foreward
 				DIRECTION.West:
-					return sight_right
+					return sight_right if not only_facing else 0
 		ShadowQuadrent.Cardinal.WEST:
 			match _facing:
 				DIRECTION.North:
-					return sight_right
+					return sight_right if not only_facing else 0
 				DIRECTION.East:
-					return sight_backward
+					return sight_backward if not only_facing else 0
 				DIRECTION.South:
-					return sight_left
+					return sight_left if not only_facing else 0
 				DIRECTION.West:
 					return sight_foreward
 	
@@ -304,7 +304,7 @@ func cancel_path() -> void:
 	_path.clear()
 	path_cleared.emit()
 
-func compute_sight() -> Array[Vector2i]:
+func compute_sight(only_facing : bool = false) -> Array[Vector2i]:
 	if map == null: return []
 	
 	var smap : Shadowmap = Shadowmap.Get().get_ref()
@@ -320,7 +320,7 @@ func compute_sight() -> Array[Vector2i]:
 	var origin : Vector2i = map.local_to_map(global_position)
 	for d : ShadowQuadrent.Cardinal in cards:
 		var q : ShadowQuadrent = ShadowQuadrent.new(origin,d)
-		var sight_range : int = _GetSightFromCardinal(d)
+		var sight_range : int = _GetSightFromCardinal(d, only_facing)
 		_sight = smap.compute_fov(q, sight_range, _sight)
 	return _sight.slice(0)
 

@@ -57,6 +57,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_HandleAction(Actor.DIRECTION.West)
 	elif event.is_action_pressed("right"):
 		_HandleAction(Actor.DIRECTION.East)
+	elif event.is_action_pressed("wait"):
+		_EndAction.call_deferred()
 	
 	if actor is Human and event.is_action_pressed("toggle_mode"):
 		match _mode:
@@ -78,6 +80,10 @@ func _DisconnectActor() -> void:
 	if actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.disconnect(_on_actor_move_ended)
 	
+	if actor is Human:
+		if actor.facing_changed.is_connected(_on_factor_facing_changed):
+			actor.facing_changed.disconnect(_on_factor_facing_changed)
+	
 	if actor is Parasite or actor is Human:
 		if actor.dead.is_connected(_on_actor_dead):
 			actor.dead.disconnect(_on_actor_dead)
@@ -93,6 +99,10 @@ func _ConnectActor() -> void:
 	
 	if not actor.move_ended.is_connected(_on_actor_move_ended):
 		actor.move_ended.connect(_on_actor_move_ended)
+	
+	if actor is Human:
+		if not actor.facing_changed.is_connected(_on_factor_facing_changed):
+			actor.facing_changed.connect(_on_factor_facing_changed)
 	
 	if actor is Parasite or actor is Human:
 		if not actor.dead.is_connected(_on_actor_dead):
@@ -149,6 +159,7 @@ func _IsAlive() -> bool:
 	return actor.is_alive()
 
 func _EndAction() -> void:
+	set_process_unhandled_input(false)
 	action_complete.emit()
 
 # ------------------------------------------------------------------------------
@@ -170,7 +181,9 @@ func _on_actor_dead() -> void:
 	dead.emit()
 
 func _on_actor_move_ended() -> void:
-	set_process_unhandled_input(false)
+	_EndAction.call_deferred()
+
+func _on_factor_facing_changed() -> void:
 	_EndAction.call_deferred()
 
 func _on_player_blood_changed(blood_level : int) -> void:

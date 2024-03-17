@@ -71,8 +71,15 @@ map = NodePath("..")
 
 [node name="Human" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("8_dra23")]
 position = Vector2(-32, -67)
+life = 20
+death_threshold = 10
 map = NodePath("..")
-hidden_in_fow = false
+initial_facing = 0
+blocking = true
+sight_foreward = 3
+sight_backward = 3
+sight_left = 3
+sight_right = 3
 
 [node name="AIBasicController" type="Node" parent="AStarTileMap/Human" node_paths=PackedStringArray("actor")]
 script = ExtResource("10_m8ouc")
@@ -83,7 +90,6 @@ action_points = 1
 [node name="Switch" parent="AStarTileMap" node_paths=PackedStringArray("map") instance=ExtResource("11_xy0s7")]
 position = Vector2(-49, -73)
 map = NodePath("..")
-blocking = false
 
 [node name="Door" parent="AStarTileMap" node_paths=PackedStringArray("switch", "map") instance=ExtResource("12_wdwy8")]
 position = Vector2(-80, -72)
@@ -112,6 +118,7 @@ group_name = &"Patrol"
 next_point = NodePath("../PatrolPoint")
 
 [node name="FOV" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="FOV"]
 material = SubResource("ShaderMaterial_mi8ja")
@@ -130,7 +137,7 @@ stretch = true
 transparent_bg = true
 handle_input_locally = false
 size = Vector2i(1152, 648)
-render_target_update_mode = 4
+render_target_update_mode = 0
 
 [node name="FollowCamera2D" type="Camera2D" parent="FOV/SubViewportContainer/SubViewport"]
 zoom = Vector2(3, 3)
